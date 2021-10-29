@@ -3,14 +3,29 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 )
 
 func main() {
-	password, confirm := "test", "test"
+	testComparePassword()
+}
+
+//testComparePassword Password comparison test function
+func testComparePassword() {
+	password := "test"
+
 	hashPassword, err := hasher.HashPassword(password)
-	if err == nil {
-		fmt.Println(hasher.CheckPasswordHash(confirm, hashPassword))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
 	}
-	fmt.Println(err)
+
+	ok := hasher.CheckPasswordHash(password, hashPassword)
+	if !ok {
+		fmt.Println("error verifying password")
+		return
+	}
+
+	fmt.Println("password matches")
 }
