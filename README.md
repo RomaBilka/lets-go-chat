@@ -1,8 +1,8 @@
 # lets-go-chat
 
-## Huv to run
+## How to run
 1. Clone the project
-2. ```go run main.go```
+2. ```go run cmd/main.go```
 
 ## License
 [MIT license](LICENSE.md).
