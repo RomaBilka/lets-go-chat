@@ -12,7 +12,7 @@ var ser = server.Server{}
 
 func main() {
 	testComparePassword()
-	ser.Run(":80")
+	ser.Run(":8080")
 }
 
 //testComparePassword Password comparison test function
