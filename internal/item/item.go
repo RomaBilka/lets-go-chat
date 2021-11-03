@@ -46,6 +46,7 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	item.CreateItem()
+
 	responses.JSON(w, http.StatusCreated, item)
 }
 
