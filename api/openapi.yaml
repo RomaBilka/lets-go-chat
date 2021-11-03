@@ -61,13 +61,13 @@ paths:
       summary: "Find item by ID"
       description: "Returns a single item"
       parameters:
-        in: path
-        name: "id"
-        required: true
-        description: "Id of item to return"
-        schema:
-          type: "number"
-          format: "int64"
+        - in: path
+          name: "id"
+          description: "Id of item"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
       responses:
         "200":
           description: "Successful operation"
