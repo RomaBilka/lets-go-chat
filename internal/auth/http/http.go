@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/RomaBiliak/lets-go-chat/internal/auth"
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
@@ -51,6 +52,9 @@ func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
 	}
+
+	w.Header().Set("X-Rate-Limit", "999999")
+	w.Header().Set("X-Expires-After", time.Now().Add(time.Hour * 1).UTC().String())
 
 	response.WriteJSON(w, http.StatusCreated, LoginResponse{Url: token})
 }
