@@ -14,7 +14,7 @@ func NewService() *Service {
 	return &Service{}
 }
 
-//Token returns token to join chat
+//GetToken returns token
 func (s Service) GetToken(userName, password string) (string, error) {
 
 	for _, user := range models.Users {
@@ -28,6 +28,7 @@ func (s Service) GetToken(userName, password string) (string, error) {
 			if err != nil {
 				return "", err
 			}
+
 			return tokenString, nil
 		}
 	}

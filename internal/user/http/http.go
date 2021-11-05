@@ -52,8 +52,8 @@ func (h *UserHTTP)CreateUser(w http.ResponseWriter, r *http.Request) {
 		Name: userRequesr.UserName,
 		Password: userRequesr.Password,
 	}
-	newUser, err := h.userService.CreateUser(userModel)
 
+	newUser, err := h.userService.CreateUser(userModel)
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return

@@ -30,6 +30,7 @@ type LoginResponse struct {
 	Url string
 }
 
+//Login returns token to join chat, status code of 201
 func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
 	loginRequest := &LoginRequest{}
 
@@ -46,7 +47,6 @@ func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, err := h.authService.GetToken(loginRequest.UserName, loginRequest.Password)
-
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
