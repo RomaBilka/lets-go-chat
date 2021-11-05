@@ -2,35 +2,24 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/RomaBiliak/lets-go-chat/internal/server"
-	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
+	"github.com/RomaBiliak/lets-go-chat/internal/user"
+	"github.com/RomaBiliak/lets-go-chat/internal/auth"
+	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
+	authHttp "github.com/RomaBiliak/lets-go-chat/internal/auth/http"
+	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
+	"net/http"
 )
 
-var ser = server.Server{}
 
 func main() {
-	testComparePassword()
-	ser.Run(":8080")
-}
 
-//testComparePassword Password comparison test function
-func testComparePassword() {
+	userService := user.NewService()
+	uHttp:= userHttp.NewUserHttp(userService)
+	http.HandleFunc("/v1/user", uHttp.CreateUser)
 
-	password := "test"
+	authService := auth.NewService()
+	aHttp:= authHttp.NewAuthHttp(authService)
+	http.HandleFunc("/v1/user/login", aHttp.Login)
 
-	hashPassword, err := hasher.HashPassword(password)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	ok := hasher.CheckPasswordHash(password, hashPassword)
-	if !ok {
-		fmt.Println("error: verifying password")
-		return
-	}
-
-	fmt.Println("password matches")
+	httpServer.Start(":8080")
 }

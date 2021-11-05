@@ -1,4 +1,4 @@
-package responses
+package response
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
+func WriteJSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 
 	err := json.NewEncoder(w).Encode(data)
@@ -15,7 +15,7 @@ func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	}
 }
 
-func ERROR(w http.ResponseWriter, statusCode int, err error) {
+func WriteERROR(w http.ResponseWriter, statusCode int, err error) {
 	msgs := struct {
 		Error string `json:"error"`
 	}{
@@ -28,10 +28,10 @@ func ERROR(w http.ResponseWriter, statusCode int, err error) {
 			msgs.Error = err.Error()
 		}
 
-		JSON(w, statusCode, msgs)
+		WriteJSON(w, statusCode, msgs)
 
 		return
 	}
 
-	JSON(w, http.StatusBadRequest, nil)
+	WriteJSON(w, http.StatusBadRequest, nil)
 }
