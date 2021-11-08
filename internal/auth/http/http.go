@@ -52,7 +52,7 @@ func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.authService.GetToken(loginRequest.UserName, loginRequest.Password)
+	token, err := h.authService.Login(loginRequest.UserName, loginRequest.Password)
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
