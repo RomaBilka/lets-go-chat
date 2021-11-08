@@ -8,4 +8,4 @@ type User struct {
 
 var UserId uint64 = 0
 
-var Users[]User
+var Users = make(map[string]User)

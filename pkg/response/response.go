@@ -19,19 +19,12 @@ func WriteERROR(w http.ResponseWriter, statusCode int, err error) {
 	msgs := struct {
 		Error string `json:"error"`
 	}{
-		Error: http.StatusText(http.StatusBadRequest),
+		Error: http.StatusText(statusCode),
 	}
 
-	if statusCode != 0 {
-		msgs.Error = http.StatusText(statusCode)
-		if err != nil {
-			msgs.Error = err.Error()
-		}
-
-		WriteJSON(w, statusCode, msgs)
-
-		return
+	if err != nil {
+		msgs.Error = err.Error()
 	}
 
-	WriteJSON(w, http.StatusBadRequest, nil)
+	WriteJSON(w, statusCode, msgs)
 }

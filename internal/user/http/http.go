@@ -10,17 +10,17 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
 )
 
-type  UserHTTP struct {
+type UserHTTP struct {
 	userService *user.Service
 }
 
-func NewUserHttp(userService *user.Service) *UserHTTP{
+func NewUserHttp(userService *user.Service) *UserHTTP {
 	return &UserHTTP{userService: userService}
 }
 
 type CreateUserRequesr struct {
-	UserName string
-	Password string
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }
 
 func (r *CreateUserRequesr) Validate() bool {
@@ -28,12 +28,18 @@ func (r *CreateUserRequesr) Validate() bool {
 }
 
 type CreateUserResponse struct {
-	Id uint64
-	UserName string
+	Id       uint64 `json:"is"`
+	UserName string `json:"userName"`
 }
 
 //CreateUser creates new user, status code of 201
-func (h *UserHTTP)CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)
+		return
+	}
+
 	userRequesr := &CreateUserRequesr{}
 
 	err := json.NewDecoder(r.Body).Decode(userRequesr)
@@ -44,12 +50,12 @@ func (h *UserHTTP)CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	ok := userRequesr.Validate()
 	if !ok {
-		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s","Bad request, short username or password"))
+		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s", "Bad request, short username or password"))
 		return
 	}
 
 	userModel := models.User{
-		Name: userRequesr.UserName,
+		Name:     userRequesr.UserName,
 		Password: userRequesr.Password,
 	}
 

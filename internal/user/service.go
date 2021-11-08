@@ -15,7 +15,7 @@ func NewService() *Service {
 //CreateUser creates a new user and adds it to users
 func (s *Service) CreateUser(user models.User) (*models.User, error) {
 
-	_, ok := getUserByName(user.Name)
+	_, ok := models.Users[user.Name]
 	if ok {
 		return &user, fmt.Errorf("%s", "User with that name already exists")
 	}
@@ -24,19 +24,11 @@ func (s *Service) CreateUser(user models.User) (*models.User, error) {
 	if err != nil {
 		return &user, err
 	}
+
 	models.UserId++
 	user.Id = models.UserId
 	user.Password = hashPassword
-	models.Users = append(models.Users, user)
+	models.Users[user.Name] = user
 
 	return &user, nil
-}
-
-func getUserByName(name string) (models.User, bool) {
-	for _, user := range models.Users {
-		if user.Name == name {
-			return user, true
-		}
-	}
-	return models.User{}, false
 }

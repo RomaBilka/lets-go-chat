@@ -2,10 +2,10 @@
 package main
 
 import (
-	"github.com/RomaBiliak/lets-go-chat/internal/user"
 	"github.com/RomaBiliak/lets-go-chat/internal/auth"
-	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
 	authHttp "github.com/RomaBiliak/lets-go-chat/internal/auth/http"
+	"github.com/RomaBiliak/lets-go-chat/internal/user"
+	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
 	"net/http"
 )
