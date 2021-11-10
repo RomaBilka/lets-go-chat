@@ -18,12 +18,12 @@ func NewUserHttp(userService *user.Service) *UserHTTP {
 	return &UserHTTP{userService: userService}
 }
 
-type CreateUserRequesr struct {
+type CreateUserRequest struct {
 	UserName string `json:"userName"`
 	Password string `json:"password"`
 }
 
-func (r *CreateUserRequesr) Validate() bool {
+func (r *CreateUserRequest) Validate() bool {
 	return len(r.UserName) > 4 && len(r.Password) > 8
 }
 
@@ -40,23 +40,23 @@ func (h *UserHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRequesr := &CreateUserRequesr{}
+	userRequest := &CreateUserRequest{}
 
-	err := json.NewDecoder(r.Body).Decode(userRequesr)
+	err := json.NewDecoder(r.Body).Decode(userRequest)
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	ok := userRequesr.Validate()
+	ok := userRequest.Validate()
 	if !ok {
-		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s", "Bad request, short username or password"))
+		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s", "Bad request, short user name or password"))
 		return
 	}
 
 	userModel := models.User{
-		Name:     userRequesr.UserName,
-		Password: userRequesr.Password,
+		Name:     userRequest.UserName,
+		Password: userRequest.Password,
 	}
 
 	newUser, err := h.userService.CreateUser(userModel)
