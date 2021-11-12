@@ -28,7 +28,7 @@ func (r *CreateUserRequest) Validate() bool {
 }
 
 type CreateUserResponse struct {
-	Id       uint64 `json:"is"`
+	Id       uint64 `json:"id"`
 	UserName string `json:"userName"`
 }
 
@@ -60,6 +60,7 @@ func (h *UserHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser, err := h.userService.CreateUser(userModel)
+
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return

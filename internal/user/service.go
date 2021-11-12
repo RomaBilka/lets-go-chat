@@ -6,29 +6,33 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 )
 
-type Service struct{}
 
-func NewService() *Service {
-	return &Service{}
+type Service struct{
+	repository models.UserRepository
+}
+
+func NewService(repository models.UserRepository) *Service {
+	return &Service{
+		repository: repository,
+	}
 }
 
 //CreateUser creates a new user and adds it to users
-func (s *Service) CreateUser(user models.User) (*models.User, error) {
+func (s *Service) CreateUser(user models.User) (models.User, error) {
+	userInDb, err := s.repository.GetUserByName(user.Name)
+	if err != nil {
+		return user, err
+	}
 
-	_, ok := models.Users[user.Name]
-	if ok {
-		return &user, fmt.Errorf("%s", "User with that name already exists")
+	if userInDb.Id > 0 {
+		return user, fmt.Errorf("%s", "User with that name already exists")
 	}
 
 	hashPassword, err := hasher.HashPassword(user.Password)
 	if err != nil {
-		return &user, err
+		return user, err
 	}
 
-	models.UserId++
-	user.Id = models.UserId
 	user.Password = hashPassword
-	models.Users[user.Name] = user
-
-	return &user, nil
+	return s.repository.CreateUser(user)
 }

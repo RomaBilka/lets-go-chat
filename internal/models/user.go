@@ -6,6 +6,7 @@ type User struct {
 	Password string
 }
 
-var UserId uint64 = 0
-
-var Users = make(map[string]User)
+type UserRepository interface {
+	GetUserByName(name string) (User, error)
+	CreateUser(user User) (User, error)
+}
