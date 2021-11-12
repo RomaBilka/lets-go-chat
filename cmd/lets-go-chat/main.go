@@ -25,11 +25,11 @@ func main() {
 
 	pgUser, ok:=os.LookupEnv("PG_USER")
 	if !ok {
-		panic(errors.New("PG_PASSWORD is empty"))
+		panic(errors.New("PG_USER is empty"))
 	}
 	pgPassword, ok:=os.LookupEnv("PG_PASSWORD")
 	if !ok {
-		panic(errors.New("PG_USER is empty"))
+		panic(errors.New("PG_PASSWORD is empty"))
 	}
 	pgDatabase, ok:=os.LookupEnv("PG_DATABASE")
 	if !ok {
