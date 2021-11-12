@@ -6,12 +6,16 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 )
 
-
-type Service struct{
-	repository models.UserRepository
+type UserRepository interface {
+	GetUserByName(name string) (models.User, error)
+	CreateUser(user models.User) (models.User, error)
 }
 
-func NewService(repository models.UserRepository) *Service {
+type Service struct{
+	repository UserRepository
+}
+
+func NewService(repository UserRepository) *Service {
 	return &Service{
 		repository: repository,
 	}

@@ -6,15 +6,18 @@ import (
 	"net/http"
 
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
-	"github.com/RomaBiliak/lets-go-chat/internal/user"
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
 )
 
-type UserHTTP struct {
-	userService *user.Service
+type UserService interface {
+	CreateUser(user models.User) (models.User, error)
 }
 
-func NewUserHttp(userService *user.Service) *UserHTTP {
+type UserHTTP struct {
+	userService UserService
+}
+
+func NewUserHttp(userService UserService) *UserHTTP {
 	return &UserHTTP{userService: userService}
 }
 
