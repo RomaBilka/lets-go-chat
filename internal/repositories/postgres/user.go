@@ -33,7 +33,7 @@ func (r *UserRepository) CheckUserExists(name string) (bool, error) {
 
 	err := r.db.QueryRow("SELECT id FROM users WHERE name=$1", name).Scan(&id)
 
-	if err != nil && err != sql.ErrNoRows  {
+	if err != nil && err != sql.ErrNoRows {
 		return false, err
 	}
 
