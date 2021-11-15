@@ -2,21 +2,18 @@
 package main
 
 import (
-	"database/sql"
 	"net/http"
 	"os"
+	"errors"
 
 	"github.com/RomaBiliak/lets-go-chat/internal/auth"
 	authHttp "github.com/RomaBiliak/lets-go-chat/internal/auth/http"
-	"github.com/RomaBiliak/lets-go-chat/internal/repositories/postgre"
+	"github.com/RomaBiliak/lets-go-chat/internal/repositories/postgres"
 	"github.com/RomaBiliak/lets-go-chat/internal/user"
 	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	 database "github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 )
 
 func main() {
@@ -26,23 +23,31 @@ func main() {
 		panic(err)
 	}
 
-	connStr := "user="+os.Getenv("PG_USER")+" password="+os.Getenv("PG_PASSWORD")+" dbname="+os.Getenv("PG_DATABASE")+" sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		panic(err)
+	pgUser, ok:=os.LookupEnv("PG_USER")
+	if !ok {
+		panic(errors.New("PG_USER is empty"))
 	}
+	pgPassword, ok:=os.LookupEnv("PG_PASSWORD")
+	if !ok {
+		panic(errors.New("PG_PASSWORD is empty"))
+	}
+	pgDatabase, ok:=os.LookupEnv("PG_DATABASE")
+	if !ok {
+		panic(errors.New("PG_DATABASE is empty"))
+	}
+
+
+	dbConfig := database.Config{
+		pgUser,
+		pgPassword,
+		pgDatabase,
+	}
+	db:= database.Run(dbConfig)
 	defer db.Close()
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://database/migrations",
-		"postgres", driver)
-	m.Steps(2)
-	if err != nil {
-		panic(err)
-	}
 
-	userRepository := postgre.NewPostgreUserRepository(db)
+
+	userRepository := postgres.NewPostgreUserRepository(db)
 
 	userService := user.NewService(userRepository)
 	uHttp := userHttp.NewUserHttp(userService)

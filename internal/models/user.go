@@ -1,12 +1,9 @@
 package models
 
+type UserId int
+
 type User struct {
-	Id       uint64
+	Id       UserId
 	Name     string
 	Password string
-}
-
-type UserRepository interface {
-	GetUserByName(name string) (User, error)
-	CreateUser(user User) (User, error)
 }

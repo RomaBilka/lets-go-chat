@@ -2,16 +2,21 @@ package auth
 
 import (
 	"fmt"
+
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 	"github.com/RomaBiliak/lets-go-chat/pkg/token"
 )
 
-type Service struct {
-	repository models.UserRepository
+type userRepository interface {
+	GetUserByName(name string) (models.User, error)
 }
 
-func NewService(repository models.UserRepository) *Service {
+type Service struct {
+	repository userRepository
+}
+
+func NewService(repository userRepository) *Service {
 	return &Service{
 		repository: repository,
 	}
@@ -30,7 +35,7 @@ func (s Service) Login(userName, password string) (string, error) {
 		return "", fmt.Errorf("%s", "Invalid password")
 	}
 
-	tokenString, err := token.CreateToken(user.Id)
+	tokenString, err := token.CreateToken(uint64(user.Id))
 	if err != nil {
 		return "", err
 	}

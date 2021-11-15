@@ -6,15 +6,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/auth"
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
 )
 
-type AuthHTTP struct {
-	authService *auth.Service
+type authService interface {
+	Login(userName, password string) (string, error)
 }
 
-func NewAuthHttp(authService *auth.Service) *AuthHTTP {
+type AuthHTTP struct {
+	authService authService
+}
+
+func NewAuthHttp(authService authService) *AuthHTTP {
 	return &AuthHTTP{authService: authService}
 }
 
