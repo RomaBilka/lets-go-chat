@@ -9,15 +9,15 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
 )
 
-type AuthService interface {
+type authService interface {
 	Login(userName, password string) (string, error)
 }
 
 type AuthHTTP struct {
-	authService AuthService
+	authService authService
 }
 
-func NewAuthHttp(authService AuthService) *AuthHTTP {
+func NewAuthHttp(authService authService) *AuthHTTP {
 	return &AuthHTTP{authService: authService}
 }
 

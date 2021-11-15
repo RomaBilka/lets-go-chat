@@ -9,15 +9,15 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/response"
 )
 
-type UserService interface {
+type userService interface {
 	CreateUser(user models.User) (models.User, error)
 }
 
 type UserHTTP struct {
-	userService UserService
+	userService userService
 }
 
-func NewUserHttp(userService UserService) *UserHTTP {
+func NewUserHttp(userService userService) *UserHTTP {
 	return &UserHTTP{userService: userService}
 }
 
@@ -69,5 +69,5 @@ func (h *UserHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.WriteJSON(w, http.StatusCreated, CreateUserResponse{Id: newUser.Id, UserName: newUser.Name})
+	response.WriteJSON(w, http.StatusCreated, CreateUserResponse{Id: uint64(newUser.Id), UserName: newUser.Name})
 }

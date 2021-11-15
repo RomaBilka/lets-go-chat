@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 )
 
@@ -18,17 +19,50 @@ type UserRepository struct {
 func (r *UserRepository) GetUserByName(name string) (models.User, error) {
 	user := models.User{}
 
-	_ = r.db.QueryRow("SELECT * FROM users WHERE name=$1", name).Scan(&user.Id, &user.Name, &user.Password)
+	err := r.db.QueryRow("SELECT * FROM users WHERE name=$1", name).Scan(&user.Id, &user.Name, &user.Password)
+
+	if err != nil && err != sql.ErrNoRows {
+		return models.User{}, err
+	}
 
 	return user, nil
 }
 
-func (r *UserRepository) CreateUser(user models.User) (models.User, error) {
-	_, err := r.db.Exec("INSERT INTO users (name, password) VALUES ($1, $2)", user.Name, user.Password)
+func (r *UserRepository) CheckUserExists(name string) (bool, error) {
+	id := 0
 
-	if err != nil {
-		return user, err
+	err := r.db.QueryRow("SELECT id FROM users WHERE name=$1", name).Scan(&id)
+
+	if err != nil && err != sql.ErrNoRows  {
+		return false, err
 	}
 
-	return r.GetUserByName(user.Name)
+	if id > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (r *UserRepository) GetUserById(id models.UserId) (models.User, error) {
+	user := models.User{}
+
+	err := r.db.QueryRow("SELECT * FROM users WHERE id=$1", id).Scan(&user.Id, &user.Name, &user.Password)
+
+	if err != nil && err != sql.ErrNoRows {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepository) CreateUser(user models.User) (models.UserId, error) {
+	id := 0
+	err := r.db.QueryRow("INSERT INTO users (name, password) VALUES ($1, $2)  RETURNING id", user.Name, user.Password).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return models.UserId(id), nil
 }
