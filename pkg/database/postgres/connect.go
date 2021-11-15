@@ -2,11 +2,12 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
-	_ "github.com/lib/pq"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/lib/pq"
 )
 
 type Config struct {
@@ -32,13 +33,14 @@ func connect(config Config) *sql.DB {
 	return db
 }
 
-func  migrateRun(db *sql.DB)  {
+func migrateRun(db *sql.DB) {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://database/migrations",
 		"postgres", driver)
-	m.Steps(2)
-	if err != nil {
-		panic(err)
+
+	err = m.Up()
+	if err == migrate.ErrNoChange {
+		fmt.Println("no new migrations")
 	}
 }
