@@ -11,6 +11,6 @@ func Start(addr string, mux *http.ServeMux) {
 		Addr:    addr,
 		Handler: mux,
 	}
-	fmt.Println("Listening " + addr)
+	fmt.Printf("Listening %s\n", addr)
 	log.Fatal(s.ListenAndServe())
 }
