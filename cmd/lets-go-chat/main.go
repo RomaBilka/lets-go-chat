@@ -2,18 +2,19 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"os"
-	"errors"
 
 	"github.com/RomaBiliak/lets-go-chat/internal/auth"
 	authHttp "github.com/RomaBiliak/lets-go-chat/internal/auth/http"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories/postgres"
 	"github.com/RomaBiliak/lets-go-chat/internal/user"
 	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
+	database "github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
+	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
 	"github.com/joho/godotenv"
-	 database "github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 )
 
 func main() {
@@ -49,13 +50,15 @@ func main() {
 
 	userRepository := postgres.NewPostgreUserRepository(db)
 
+	mux := http.NewServeMux()
+
 	userService := user.NewService(userRepository)
 	uHttp := userHttp.NewUserHttp(userService)
-	http.HandleFunc("/v1/user", uHttp.CreateUser)
+	mux.Handle("/v1/user", middleware.LogRequest(middleware.LogError(middleware.LogPanic(uHttp.CreateUser))))
 
 	authService := auth.NewService(userRepository)
 	aHttp := authHttp.NewAuthHttp(authService)
-	http.HandleFunc("/v1/user/login", aHttp.Login)
+	mux.Handle("/v1/user/login", middleware.LogRequest(middleware.LogError(middleware.LogPanic(aHttp.Login))))
 
-	httpServer.Start(":8080")
+	httpServer.Start(":8080", mux)
 }

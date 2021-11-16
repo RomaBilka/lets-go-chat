@@ -16,15 +16,16 @@ type Config struct {
 	Database string
 }
 
-func Run(confid Config) *sql.DB {
-	db := connect(confid)
+func Run(config Config) *sql.DB {
+	db := connect(config)
 	migrateRun(db)
 	return db
 }
 
 func connect(config Config) *sql.DB {
 
-	connStr := "user=" + config.User + " password=" + config.Password + " dbname=" + config.Database + " sslmode=disable"
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", config.User, config.Password, config.Database)
+
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
