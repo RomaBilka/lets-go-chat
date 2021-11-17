@@ -8,6 +8,7 @@ import (
 
 	"github.com/RomaBiliak/lets-go-chat/internal/auth"
 	authHttp "github.com/RomaBiliak/lets-go-chat/internal/auth/http"
+	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories/postgres"
 	"github.com/RomaBiliak/lets-go-chat/internal/user"
 	userHttp "github.com/RomaBiliak/lets-go-chat/internal/user/http"
@@ -60,5 +61,33 @@ func main() {
 	aHttp := authHttp.NewAuthHttp(authService)
 	mux.Handle("/v1/user/login", middleware.LogRequest(middleware.LogError(middleware.LogPanic(aHttp.Login))))
 
+	mux.Handle("/", middleware.LogRequest(serveHome))
+
+
+	hub := chat.NewHub()
+	go hub.Run()
+
+	mux.Handle("/ws", middleware.LogRequest(
+		func(w http.ResponseWriter, r *http.Request) {
+			chat.Chat(hub, w, r)
+	}))
+
+	mux.Handle("/ws1", middleware.LogRequest(chat.ChatTest))
+
+
+	//http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	//	chat.Chat(hub, w, r)
+	//})
+
+	//chatService:= chat.NewChat()
+	//mux.Handle("/ws", func(w http.ResponseWriter, r *http.Request) {
+	//	serveWs(s, w, r)
+	//})
+
+
 	httpServer.Start(":8080", mux)
+}
+
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "home.html")
 }
