@@ -12,6 +12,8 @@ type Hub struct {
 
 	// Unregister requests from clients.
 	unregister chan *Client
+
+	count int
 }
 
 func NewHub() *Hub {
@@ -28,10 +30,12 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
+			h.count++
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
+				h.count--
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {

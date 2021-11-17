@@ -1,7 +1,6 @@
 package chat
 
 import (
-	"bytes"
 	"log"
 	"net/http"
 	"time"
@@ -28,11 +27,10 @@ var (
 	space   = []byte{' '}
 )
 
-var upgrader1 = websocket.Upgrader{
+var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
-
 
 // serveWs handles websocket requests from the peer.
 func Chat(hub *Hub, w http.ResponseWriter, r *http.Request) {
@@ -47,8 +45,8 @@ func Chat(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
-	go client.writePump()
-	go client.readPump()
+	go client.write()
+	go client.read()
 }
 
 
@@ -69,14 +67,14 @@ type Client struct {
 // The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) readPump() {
+func (c *Client) read() {
 	defer func() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	//c.conn.SetReadLimit(maxMessageSize)
+	//c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	//c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
@@ -85,7 +83,7 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		c.hub.broadcast <- message
 	}
 }
@@ -95,15 +93,16 @@ func (c *Client) readPump() {
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) writePump() {
-	ticker := time.NewTicker(pingPeriod)
+func (c *Client) write() {
+	//ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		ticker.Stop()
+	//	ticker.Stop()
 		c.conn.Close()
 	}()
 	for {
-		select {
-		case message, ok := <-c.send:
+		//select {
+		//case
+		message, ok := <-c.send
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
@@ -127,12 +126,12 @@ func (c *Client) writePump() {
 			if err := w.Close(); err != nil {
 				return
 			}
-		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
-		}
+		//case <-ticker.C:
+		//	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		//	if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+		//		return
+		//	}
+		//}
 	}
 }
 
