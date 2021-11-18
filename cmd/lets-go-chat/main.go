@@ -56,11 +56,11 @@ func main() {
 	aHttp := handlers.NewAuthHttp(authService)
 	mux.Handle("/v1/user/login", middleware.LogRequest(middleware.LogError(middleware.LogPanic(aHttp.Login))))
 
-	chatService := services.NewService(userRepository)
+	chatService := services.NewChatService(userRepository)
 	cHttp := handlers.NewChatHttp(chatService)
 	mux.Handle("/v1/ws", middleware.LogRequest(middleware.Authentication(cHttp.Chat)))
 
-	mux.Handle("/v1/user/active", middleware.LogRequest(middleware.LogError(middleware.LogPanic(cHttp.UserInChat))))
+	mux.Handle("/v1/user/active", middleware.LogRequest(middleware.LogError(middleware.LogPanic(cHttp.UsersInChat))))
 
 	httpServer.Start(":8080", mux)
 }

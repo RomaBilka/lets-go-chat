@@ -15,7 +15,7 @@ type ChatService struct {
 	repository chatRepository
 }
 
-func NewService(repository chatRepository) *ChatService {
+func NewChatService(repository chatRepository) *ChatService {
 	return &ChatService{
 		repository: repository,
 	}

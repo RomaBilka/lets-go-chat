@@ -52,7 +52,7 @@ func (h *ChatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *ChatHTTP) UserInChat(w http.ResponseWriter, r *http.Request) {
+func (h *ChatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)
