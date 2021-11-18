@@ -1,4 +1,4 @@
-package user
+package services
 
 import (
 	"fmt"
@@ -14,18 +14,18 @@ type userRepository interface {
 	CreateUser(user models.User) (models.UserId, error)
 }
 
-type Service struct {
+type UserService struct {
 	repository userRepository
 }
 
-func NewService(repository userRepository) *Service {
-	return &Service{
+func NewUserService(repository userRepository) *UserService {
+	return &UserService{
 		repository: repository,
 	}
 }
 
 //CreateUser creates a new user and adds it to users
-func (s *Service) CreateUser(user models.User) (models.User, error) {
+func (s *UserService) CreateUser(user models.User) (models.User, error) {
 	exists, err := s.repository.CheckUserExists(user.Name)
 	if err != nil {
 		return user, err

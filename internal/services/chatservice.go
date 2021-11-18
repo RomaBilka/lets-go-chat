@@ -1,4 +1,4 @@
-package chat
+package services
 
 import (
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
@@ -7,25 +7,25 @@ import (
 
 var users = []models.User{}
 
-type userRepository interface {
+type chatRepository interface {
 	GetUserById(id models.UserId) (models.User, error)
 }
 
-type Service struct {
-	repository userRepository
+type ChatService struct {
+	repository chatRepository
 }
 
-func NewService(repository userRepository) *Service {
-	return &Service{
+func NewService(repository chatRepository) *ChatService {
+	return &ChatService{
 		repository: repository,
 	}
 }
 
-func (s Service) UsersInChat() []models.User {
+func (s ChatService) UsersInChat() []models.User {
 	return users
 }
 
-func (s Service) Reader(conn *websocket.Conn, userId models.UserId) error {
+func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
 
 	user, err := s.repository.GetUserById(userId)
 	if err != nil {
