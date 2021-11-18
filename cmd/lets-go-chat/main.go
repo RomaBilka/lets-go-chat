@@ -48,7 +48,6 @@ func main() {
 	defer db.Close()
 
 
-
 	userRepository := postgres.NewPostgreUserRepository(db)
 
 	mux := http.NewServeMux()
@@ -61,28 +60,13 @@ func main() {
 	aHttp := authHttp.NewAuthHttp(authService)
 	mux.Handle("/v1/user/login", middleware.LogRequest(middleware.LogError(middleware.LogPanic(aHttp.Login))))
 
-	mux.Handle("/", middleware.LogRequest(serveHome))
+	chatService := chat.NewService(userRepository)
+	cHttp := chat.NewChatHttp(chatService)
+	mux.Handle("/v1/ws", middleware.LogRequest(middleware.Authentication(cHttp.Chat)))
 
+	mux.Handle("/v1/user/active", middleware.LogRequest(middleware.LogError(middleware.LogPanic(cHttp.UserInChat))))
 
-	hub := chat.NewHub()
-	go hub.Run()
-
-	mux.Handle("/ws", middleware.LogRequest(
-		func(w http.ResponseWriter, r *http.Request) {
-			chat.Chat(hub, w, r)
-	}))
-
-	mux.Handle("/ws1", middleware.LogRequest(chat.ChatTest))
-
-
-	//http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-	//	chat.Chat(hub, w, r)
-	//})
-
-	//chatService:= chat.NewChat()
-	//mux.Handle("/ws", func(w http.ResponseWriter, r *http.Request) {
-	//	serveWs(s, w, r)
-	//})
+	//mux.Handle("/", middleware.LogRequest(serveHome))
 
 
 	httpServer.Start(":8080", mux)
