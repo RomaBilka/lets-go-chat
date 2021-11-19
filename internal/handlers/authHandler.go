@@ -26,7 +26,7 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-func (r *LoginRequest) Validate() bool {
+func (r *LoginRequest) validate() bool {
 	return len(r.UserName) > 0 && len(r.Password) > 0
 }
 
@@ -49,7 +49,7 @@ func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := loginRequest.Validate()
+	ok := loginRequest.validate()
 	if !ok {
 		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s", "Bad request, empty user name or password"))
 		return
