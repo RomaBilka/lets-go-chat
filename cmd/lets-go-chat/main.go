@@ -13,6 +13,8 @@ import (
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
 	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
 	"github.com/joho/godotenv"
+	"github.com/RomaBiliak/lets-go-chat/pkg/log"
+
 )
 
 func main() {
@@ -48,19 +50,21 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	logStdout := log.NewLogStdout()
+
 	userService := services.NewUserService(userRepository)
 	uHttp := handlers.NewUserHttp(userService)
-	mux.Handle("/v1/user", middleware.LogRequest(middleware.LogError(middleware.LogPanic(uHttp.CreateUser))))
+	mux.Handle("/v1/user", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, uHttp.CreateUser))))
 
 	authService := services.NewAuthService(userRepository)
 	aHttp := handlers.NewAuthHttp(authService)
-	mux.Handle("/v1/user/login", middleware.LogRequest(middleware.LogError(middleware.LogPanic(aHttp.Login))))
+	mux.Handle("/v1/user/login", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, aHttp.Login))))
 
 	chatService := services.NewChatService(userRepository)
 	cHttp := handlers.NewChatHttp(chatService)
-	mux.Handle("/v1/ws", middleware.LogRequest(middleware.Authentication(cHttp.Chat)))
+	mux.Handle("/v1/ws", middleware.LogRequest(logStdout, middleware.Authentication(cHttp.Chat)))
 
-	mux.Handle("/v1/user/active", middleware.LogRequest(middleware.LogError(middleware.LogPanic(cHttp.UsersInChat))))
+	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
 
 	httpServer.Start(":8080", mux)
 }

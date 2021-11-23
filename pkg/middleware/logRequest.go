@@ -2,19 +2,17 @@ package middleware
 
 import (
 	"net/http"
-
-	"github.com/RomaBiliak/lets-go-chat/pkg/log"
 )
 
-func LogRequest(next http.HandlerFunc) http.HandlerFunc {
+func LogRequest(log logInterface, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		logStdout := log.NewLogStdout("Request")
-		logStdout.AddMessage("method", r.Method)
-		logStdout.AddMessage("path", r.URL.EscapedPath())
-		logStdout.AddMessage("ip", r.Header.Get("X-Real-Ip"))
-		logStdout.AddMessage("User-Agent", r.Header.Get("User-Agent"))
-		logStdout.Print()
+		log.Init("Request")
+		log.AddMessage("method", r.Method)
+		log.AddMessage("path", r.URL.EscapedPath())
+		log.AddMessage("ip", r.Header.Get("X-Real-Ip"))
+		log.AddMessage("User-Agent", r.Header.Get("User-Agent"))
+		log.Print()
 
 		next.ServeHTTP(w, r)
 	}
