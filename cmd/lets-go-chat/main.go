@@ -48,6 +48,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
+
+
 	userService := services.NewUserService(userRepository)
 	uHttp := handlers.NewUserHttp(userService)
 	mux.Handle("/v1/user", middleware.LogRequest(middleware.LogError(middleware.LogPanic(uHttp.CreateUser))))
@@ -63,8 +65,4 @@ func main() {
 	mux.Handle("/v1/user/active", middleware.LogRequest(middleware.LogError(middleware.LogPanic(cHttp.UsersInChat))))
 
 	httpServer.Start(":8080", mux)
-}
-
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "home.html")
 }

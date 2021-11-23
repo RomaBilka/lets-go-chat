@@ -48,14 +48,14 @@ func (t *Token) IsExpired() (bool, error) {
 	return time.Now().Unix() > timestamp, nil
 }
 
-func (t *Token) UserId() (int64, error) {
+func (t *Token) UserId() (uint64, error) {
 
 	claims, ok := t.Claims.(jwt.MapClaims)
 	if !ok {
 		return 0, nil
 	}
 
-	userId, err := strconv.ParseInt(fmt.Sprintf("%.0f", claims["user_id"]), 10, 64)
+	userId, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 64)
 	if err != nil {
 		return 0, err
 	}

@@ -37,7 +37,7 @@ func connect(config Config) *sql.DB {
 func migrateRun(db *sql.DB) {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://database/migrations",
+		"file://../../database/migrations",
 		"postgres", driver)
 
 	err = m.Up()
