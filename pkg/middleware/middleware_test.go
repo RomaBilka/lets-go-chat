@@ -11,11 +11,11 @@ import (
 )
 
 func TestLogRequest(t *testing.T) {
-	ts := httptest.NewServer(LogRequest(testLog, func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(LogRequest(testLog, func(w http.ResponseWriter, r *http.Request) {
 	}))
-	defer ts.Close()
+	defer server.Close()
 
-	_, err := http.Get(ts.URL)
+	_, err := http.Get(server.URL)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Request", testLog.GetName())
@@ -24,12 +24,12 @@ func TestLogRequest(t *testing.T) {
 }
 
 func TestLogError(t *testing.T) {
-	ts := httptest.NewServer(LogError(testLog, func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(LogError(testLog, func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 	}))
-	defer ts.Close()
+	defer server.Close()
 
-	_, err := http.Get(ts.URL)
+	_, err := http.Get(server.URL)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Error", testLog.GetName())
@@ -39,12 +39,12 @@ func TestLogError(t *testing.T) {
 
 func TestLogPanic(t *testing.T) {
 	testPanicStr := "Test Panic"
-	ts := httptest.NewServer(LogPanic(testLog, func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(LogPanic(testLog, func(w http.ResponseWriter, r *http.Request) {
 		panic(testPanicStr)
 	}))
-	defer ts.Close()
+	defer server.Close()
 
-	_, err := http.Get(ts.URL)
+	_, err := http.Get(server.URL)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Panic", testLog.GetName())
@@ -52,27 +52,27 @@ func TestLogPanic(t *testing.T) {
 }
 
 func TestAuthentication(t *testing.T) {
-	ts := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
-	defer ts.Close()
+	defer server.Close()
 
 	newToken, err := token.CreateToken(uint64(1))
 	assert.NoError(t, err)
 
-	res, err := http.Get(ts.URL + "?token=" + newToken)
+	res, err := http.Get(server.URL + "?token=" + newToken)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 }
 
 func TestAuthenticationFail(t *testing.T) {
-	ts := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
-	defer ts.Close()
+	defer server.Close()
 
-	res, err := http.Get(ts.URL + "?token=")
+	res, err := http.Get(server.URL + "?token=")
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
