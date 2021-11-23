@@ -3,8 +3,6 @@ package middleware
 import (
 	"net/http"
 	"strconv"
-
-	"github.com/RomaBiliak/lets-go-chat/pkg/log"
 )
 
 type responseWriter struct {
@@ -33,7 +31,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 	return
 }
 
-func LogError(next http.HandlerFunc) http.HandlerFunc {
+func LogError(log logInterface, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		wrapped := wrapResponseWriter(w)
@@ -41,11 +39,11 @@ func LogError(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(wrapped, r)
 
 		if wrapped.status >= 400 {
-			logStdout := log.NewLogStdout("Error")
-			logStdout.AddMessage("status", strconv.Itoa(wrapped.status))
-			logStdout.AddMessage("method", r.Method)
-			logStdout.AddMessage("path", r.URL.EscapedPath())
-			logStdout.Print()
+			log.Init("Error")
+			log.AddMessage("status", strconv.Itoa(wrapped.status))
+			log.AddMessage("method", r.Method)
+			log.AddMessage("path", r.URL.EscapedPath())
+			log.Print()
 		}
 	}
 }

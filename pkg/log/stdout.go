@@ -1,7 +1,6 @@
 package log
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -13,8 +12,13 @@ type Log struct {
 	messages map[string]string
 }
 
-func NewLogStdout(name string) *Log {
-	return &Log{name: name, messages: make(map[string]string)}
+func NewLogStdout() *Log {
+	return &Log{}
+}
+
+func (l *Log) Init(name string) {
+	l.name = name
+	l.messages = make(map[string]string)
 }
 
 func (l *Log) AddMessage(key, value string) {
@@ -22,8 +26,6 @@ func (l *Log) AddMessage(key, value string) {
 }
 
 func (l *Log) Print() {
-	w := bufio.NewWriter(os.Stdout)
-	fmt.Fprint(w, "Hello, ")
 	_, err := io.WriteString(os.Stdout, fmt.Sprintf("========= Start: %s =========\n", l.name))
 
 	for key, value := range l.messages {
@@ -31,7 +33,7 @@ func (l *Log) Print() {
 	}
 
 	_, err = io.WriteString(os.Stdout, fmt.Sprintf("========= End: %s =========\n", l.name))
-	w.Flush()
+
 	if err != nil {
 		log.Fatal(err)
 	}

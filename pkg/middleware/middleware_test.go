@@ -1,69 +1,79 @@
 package middleware
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
+	"strconv"
 	"testing"
+
+	"github.com/RomaBiliak/lets-go-chat/pkg/token"
+	"github.com/stretchr/testify/assert"
 )
 
-func logRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("teeeeest")
-}
-
 func TestLogRequest(t *testing.T) {
-
-	buf := &bytes.Buffer{}
-
-	// Redirect STDOUT to a buffer
-	//stdout := os.Stdout
-	r, _, err := os.Pipe()
-	if err != nil {
-		t.Errorf("Failed to redirect STDOUT")
-	}
-	//os.Stdout = w
-	go func() {
-		scanner := bufio.NewScanner(r)
-		for scanner.Scan() {
-			fmt.Println(scanner.Text()+"1111")
-			buf.WriteString(scanner.Text())
-		}
-	}()
-
-	fmt.Println(55555)
-
-	ts := httptest.NewServer(LogRequest(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(LogRequest(testLog, func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer ts.Close()
 
-	res, err := http.Get(ts.URL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	greeting, err := io.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+	_, err := http.Get(ts.URL)
 
-	fmt.Printf("%s", greeting)
-//////////////////////////
-//	w.Close()
-//	os.Stdout = stdout
-//
-//	// Test output
-//	t.Log(buf)
-//	if buf.Len() == 0 {
-//		t.Error("No information logged to STDOUT")
-//	}
-//
-//	if strings.Count(buf.String(), "\n") > 1 {
-//		t.Error("Expected only a single line of log output")
-//	}
+	assert.NoError(t, err)
+	assert.Equal(t, "Request", testLog.GetName())
+	assert.Equal(t, http.MethodGet, testLog.GetMessage("method"))
 
+}
+
+func TestLogError(t *testing.T) {
+	ts := httptest.NewServer(LogError(testLog, func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "", http.StatusBadRequest)
+	}))
+	defer ts.Close()
+
+	_, err := http.Get(ts.URL)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "Error", testLog.GetName())
+	assert.Equal(t, http.MethodGet, testLog.GetMessage("method"))
+	assert.Equal(t, strconv.Itoa(http.StatusBadRequest), testLog.GetMessage("status"))
+}
+
+func TestLogPanic(t *testing.T) {
+	testPanicStr := "Test Panic"
+	ts := httptest.NewServer(LogPanic(testLog, func(w http.ResponseWriter, r *http.Request) {
+		panic(testPanicStr)
+	}))
+	defer ts.Close()
+
+	_, err := http.Get(ts.URL)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "Panic", testLog.GetName())
+	assert.Equal(t, testPanicStr, testLog.GetMessage("message"))
+}
+
+func TestAuthentication(t *testing.T) {
+	ts := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	newToken, err := token.CreateToken(uint64(1))
+	assert.NoError(t, err)
+
+	res, err := http.Get(ts.URL + "?token=" + newToken)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+}
+
+func TestAuthenticationFail(t *testing.T) {
+	ts := httptest.NewServer(Authentication(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	res, err := http.Get(ts.URL + "?token=")
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 }
