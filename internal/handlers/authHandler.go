@@ -13,12 +13,12 @@ type authService interface {
 	Login(userName, password string) (string, error)
 }
 
-type AuthHTTP struct {
+type authHTTP struct {
 	authService authService
 }
 
-func NewAuthHttp(authService authService) *AuthHTTP {
-	return &AuthHTTP{authService: authService}
+func NewAuthHttp(authService authService) *authHTTP {
+	return &authHTTP{authService: authService}
 }
 
 type LoginRequest struct {
@@ -35,7 +35,7 @@ type LoginResponse struct {
 }
 
 //Login returns token to join chat, status code of 201
-func (h *AuthHTTP) Login(w http.ResponseWriter, r *http.Request) {
+func (h *authHTTP) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)
 		return

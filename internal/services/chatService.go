@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var users = []models.User{}
+var users = make(map[models.UserId]models.User)
 
 type chatRepository interface {
 	GetUserById(id models.UserId) (models.User, error)
@@ -21,21 +21,19 @@ func NewChatService(repository chatRepository) *ChatService {
 	}
 }
 
-func (s ChatService) UsersInChat() []models.User {
+func (s ChatService) UsersInChat() map[models.UserId]models.User {
 	return users
 }
 
 func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
-
 	user, err := s.repository.GetUserById(userId)
 	if err != nil {
 		return err
 	}
 
-	deleteUser(userId)
-	users = append(users, user)
+	users[userId] = user
 	defer func() {
-		deleteUser(userId)
+		delete(users, userId)
 	}()
 
 	for {
@@ -50,11 +48,3 @@ func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
 	}
 }
 
-func deleteUser(userId models.UserId){
-	for i := range users {
-		if users[i].Id == userId {
-			users = append(users[:i], users[i+1:]...)
-			break
-		}
-	}
-}

@@ -11,10 +11,9 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
 	"github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
+	"github.com/RomaBiliak/lets-go-chat/pkg/log"
 	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
 	"github.com/joho/godotenv"
-	"github.com/RomaBiliak/lets-go-chat/pkg/log"
-
 )
 
 func main() {
