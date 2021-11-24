@@ -49,8 +49,7 @@ func (h *authHTTP) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := loginRequest.validate()
-	if !ok {
+	if ok := loginRequest.validate(); !ok {
 		response.WriteERROR(w, http.StatusBadRequest, fmt.Errorf("%s", "Bad request, empty user name or password"))
 		return
 	}

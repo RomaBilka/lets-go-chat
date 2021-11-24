@@ -1,6 +1,8 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/gorilla/websocket"
 )
@@ -13,12 +15,25 @@ type chatRepository interface {
 
 type ChatService struct {
 	repository chatRepository
+	upgrader websocket.Upgrader
 }
 
 func NewChatService(repository chatRepository) *ChatService {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+
 	return &ChatService{
 		repository: repository,
+		upgrader: upgrader,
 	}
+}
+
+func (s ChatService) Upgrader() websocket.Upgrader {
+	return s.upgrader
 }
 
 func (s ChatService) UsersInChat() map[models.UserId]models.User {

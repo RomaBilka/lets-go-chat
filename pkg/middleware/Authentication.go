@@ -11,8 +11,7 @@ func Authentication(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		queryToken := r.URL.Query().Get("token")
 
-		_, ok := token.RevokedTokens[queryToken]
-		if ok {
+		if _, ok := token.RevokedTokens[queryToken]; ok {
 			response.WriteERROR(w, http.StatusUnauthorized, nil)
 			return
 		}

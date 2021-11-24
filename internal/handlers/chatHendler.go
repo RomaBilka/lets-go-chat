@@ -12,6 +12,7 @@ import (
 type chatService interface {
 	Reader(conn *websocket.Conn, id models.UserId) error
 	UsersInChat() map[models.UserId]models.User
+	Upgrader() websocket.Upgrader
 }
 
 type chatHTTP struct {
@@ -20,11 +21,6 @@ type chatHTTP struct {
 
 func NewChatHttp(chatService chatService) *chatHTTP {
 	return &chatHTTP{chatService: chatService}
-}
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
 }
 
 func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
@@ -36,8 +32,7 @@ func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
-
+	upgrader := h.chatService.Upgrader()
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
