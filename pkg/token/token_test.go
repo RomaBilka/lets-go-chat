@@ -8,7 +8,7 @@ import (
 
 var userId uint64 = 1
 
-func createToken(t *testing.T)  string {
+func createToken(t *testing.T) string {
 	newToken, err := CreateToken(userId)
 
 	if err != nil {
@@ -18,13 +18,13 @@ func createToken(t *testing.T)  string {
 }
 
 func TestCreateToken(t *testing.T) {
-	newToken:=createToken(t)
+	newToken := createToken(t)
 
 	require.NotEmpty(t, newToken)
 }
 
 func TestIsExpiredFalse(t *testing.T) {
-	newToken:=createToken(t)
+	newToken := createToken(t)
 
 	token, err := ParseToken(newToken)
 	require.NoError(t, err)
@@ -35,7 +35,7 @@ func TestIsExpiredFalse(t *testing.T) {
 }
 
 func TestUserId(t *testing.T) {
-	newToken:=createToken(t)
+	newToken := createToken(t)
 
 	token, err := ParseToken(newToken)
 	require.NoError(t, err)

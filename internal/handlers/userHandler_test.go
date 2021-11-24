@@ -16,7 +16,6 @@ var user = CreateUserRequest{
 	"test_password",
 }
 
-
 func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder {
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(user)

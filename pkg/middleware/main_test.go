@@ -25,7 +25,7 @@ func (l *Log) Init(name string) {
 	l.name = name
 	l.messages = make(map[string]string)
 }
-func (l *Log) GetName() string{
+func (l *Log) GetName() string {
 	return l.name
 }
 

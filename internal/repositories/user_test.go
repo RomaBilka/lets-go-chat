@@ -25,7 +25,7 @@ var user = models.User{
 	Password: "pass",
 }
 
-func createUser(t *testing.T) models.UserId{
+func createUser(t *testing.T) models.UserId {
 	id, err := testUserRepository.CreateUser(user)
 
 	assert.NotNil(t, id)
@@ -33,13 +33,12 @@ func createUser(t *testing.T) models.UserId{
 	return id
 }
 
-
 func TestCreateUser(t *testing.T) {
 	createUser(t)
 }
 
 func TestGetUserById(t *testing.T) {
-	id:= createUser(t)
+	id := createUser(t)
 
 	u, err := testUserRepository.GetUserById(id)
 

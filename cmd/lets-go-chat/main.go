@@ -23,26 +23,25 @@ func main() {
 		panic(err)
 	}
 
-	pgUser, ok:=os.LookupEnv("PG_USER")
+	pgUser, ok := os.LookupEnv("PG_USER")
 	if !ok {
 		panic(errors.New("PG_USER is empty"))
 	}
-	pgPassword, ok:=os.LookupEnv("PG_PASSWORD")
+	pgPassword, ok := os.LookupEnv("PG_PASSWORD")
 	if !ok {
 		panic(errors.New("PG_PASSWORD is empty"))
 	}
-	pgDatabase, ok:=os.LookupEnv("PG_DATABASE")
+	pgDatabase, ok := os.LookupEnv("PG_DATABASE")
 	if !ok {
 		panic(errors.New("PG_DATABASE is empty"))
 	}
-
 
 	dbConfig := postgres.Config{
 		pgUser,
 		pgPassword,
 		pgDatabase,
 	}
-	db:= postgres.Run(dbConfig)
+	db := postgres.Run(dbConfig)
 	defer db.Close()
 
 	userRepository := repositories.NewPostgreUserRepository(db)

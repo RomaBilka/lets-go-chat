@@ -8,7 +8,7 @@ import (
 func LogPanic(log logInterface, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
-			if message:=recover(); message != nil {
+			if message := recover(); message != nil {
 				log.Init("Panic")
 				log.AddMessage("message", fmt.Sprintf("%s", message))
 				log.Print()
