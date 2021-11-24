@@ -11,7 +11,7 @@ import (
 
 type chatService interface {
 	Reader(conn *websocket.Conn, id models.UserId) error
-	UsersInChat()map[models.UserId]models.User
+	UsersInChat() map[models.UserId]models.User
 }
 
 type chatHTTP struct {
@@ -28,9 +28,9 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
-	t, _:= token.ParseToken(r.URL.Query().Get("token"))
+	t, _ := token.ParseToken(r.URL.Query().Get("token"))
 
-	useId, err:=t.UserId()
+	useId, err := t.UserId()
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
@@ -67,7 +67,7 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 	activeUsers := h.chatService.UsersInChat()
 	users := make([]CreateUserResponse, len(activeUsers))
 
-	for _, user := range activeUsers{
+	for _, user := range activeUsers {
 		users = append(users, CreateUserResponse{
 			uint64(user.Id),
 			user.Name,
@@ -76,4 +76,3 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJSON(w, http.StatusCreated, users)
 }
-

@@ -47,4 +47,3 @@ func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
 		}
 	}
 }
-

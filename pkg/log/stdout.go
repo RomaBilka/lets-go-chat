@@ -35,7 +35,6 @@ func (l *Log) Print() {
 
 	_, err = io.WriteString(os.Stdout, fmt.Sprintf("========= End: %s =========\n", l.name))
 
-
 	if err != nil {
 		log.Fatal(err)
 	}
