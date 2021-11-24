@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"errors"
 	"os"
 	"testing"
@@ -12,11 +13,15 @@ import (
 )
 
 var testUserRepository *repositories.UserRepository
-var uHttp *UserHTTP
+var uHttp *userHTTP
+var aHttp *authHTTP
+var cHttp *chatHTTP
 
 type errorResponse struct {
 	Error string `json:"error"`
 }
+
+var db *sql.DB
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
@@ -42,12 +47,24 @@ func TestMain(m *testing.M) {
 		pgPassword,
 		pgDatabase,
 	}
-	db := postgres.Run(dbConfig)
+	db = postgres.Run(dbConfig)
+
 	defer db.Close()
 	testUserRepository = repositories.NewPostgreUserRepository(db)
 
 	userService := services.NewUserService(testUserRepository)
 	uHttp = NewUserHttp(userService)
 
+	authService := services.NewAuthService(testUserRepository)
+	aHttp = NewAuthHttp(authService)
+
+	cService := services.NewChatService(testUserRepository)
+	cHttp = NewChatHttp(cService)
+
 	os.Exit(m.Run())
+}
+
+func truncateUsers() error {
+	_, err := db.Query("TRUNCATE users")
+	return err
 }

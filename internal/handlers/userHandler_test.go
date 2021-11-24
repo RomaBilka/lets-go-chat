@@ -17,6 +17,7 @@ var user = CreateUserRequest{
 }
 
 func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder {
+
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(user)
 
@@ -30,22 +31,32 @@ func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder
 }
 
 func TestCreateUser(t *testing.T) {
-	recorder := createUser(t, user)
+	defer func() {
+		err := truncateUsers()
+		assert.NoError(t, err)
+	}()
 
-	userResponse := CreateUserResponse{}
+	recorder := createUser(t, user)
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+
+	userResponse := &CreateUserResponse{}
 	err := json.NewDecoder(recorder.Body).Decode(userResponse)
 
 	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.NotEmpty(t, userResponse)
 
 	userInDb, err := testUserRepository.GetUserById(models.UserId(userResponse.Id))
-	assert.NoError(t, err)
 
+	assert.NoError(t, err)
 	assert.Equal(t, user.UserName, userInDb.Name)
 }
 
 func TestCreateSecondUser(t *testing.T) {
+	defer func() {
+		err := truncateUsers()
+		assert.NoError(t, err)
+	}()
+
+	createUser(t, user)
 	recorder := createUser(t, user)
 
 	errorResponse := &errorResponse{}
@@ -54,7 +65,6 @@ func TestCreateSecondUser(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	assert.NotEmpty(t, errorResponse)
-
 	assert.Equal(t, "User with that name already exists", errorResponse.Error)
 }
 
@@ -67,6 +77,5 @@ func TestCreateUserShortNamePassword(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	assert.NotEmpty(t, errorResponse)
-
 	assert.Equal(t, "Bad request, short user name or password", errorResponse.Error)
 }
