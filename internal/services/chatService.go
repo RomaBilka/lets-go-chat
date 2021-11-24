@@ -15,7 +15,7 @@ type chatRepository interface {
 
 type ChatService struct {
 	repository chatRepository
-	upgrader websocket.Upgrader
+	upgrader   websocket.Upgrader
 }
 
 func NewChatService(repository chatRepository) *ChatService {
@@ -28,7 +28,7 @@ func NewChatService(repository chatRepository) *ChatService {
 
 	return &ChatService{
 		repository: repository,
-		upgrader: upgrader,
+		upgrader:   upgrader,
 	}
 }
 
