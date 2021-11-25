@@ -11,11 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var user = CreateUserRequest{
-	"test_name1",
-	"test_password",
-}
-
 func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder {
 
 	b := new(bytes.Buffer)

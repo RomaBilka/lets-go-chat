@@ -40,13 +40,17 @@ func (s ChatService) UsersInChat() map[models.UserId]models.User {
 	return users
 }
 
+func (s ChatService) SetUser(user models.User) {
+	users[user.Id] = user
+}
+
 func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
 	user, err := s.repository.GetUserById(userId)
 	if err != nil {
 		return err
 	}
+	s.SetUser(user)
 
-	users[userId] = user
 	defer func() {
 		delete(users, userId)
 	}()

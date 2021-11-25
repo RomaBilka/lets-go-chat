@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
+	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
 	"github.com/RomaBiliak/lets-go-chat/pkg/token"
 	"github.com/gorilla/websocket"
@@ -45,43 +47,26 @@ func TestChat(t *testing.T) {
 	assert.Equal(t, message, string(readMessage))
 }
 
-//func TestUsersInChat(t *testing.T) {
-//	defer func() {
-//		err := truncateUsers()
-//		assert.NoError(t, err)
-//	}()
-//	user, err := uHttp.userService.CreateUser(models.User{Name: login.UserName, Password: login.Password})
-//	assert.NoError(t, err)
-//
-//	tokenString, err := token.CreateToken(uint64(user.Id))
-//	assert.NoError(t, err)
-//
-//	server, ws := newWSServer(t, middleware.Authentication(cHttp.Chat), tokenString)
-//	defer server.Close()
-//	defer ws.Close()
-//
-//
-//
-//	req, err := http.NewRequest(http.MethodGet, "/v1/user/active", nil)
-//	assert.NoError(t, err)
-//
-//	recorder := httptest.NewRecorder()
-//	handler := http.HandlerFunc(uHttp.CreateUser)
-//	handler.ServeHTTP(recorder, req)
-//
-//
-//
-//
-//	//resp, err := http.Get(server.URL+"/v1/user/active")
-//	//assert.NoError(t, err)
-//	//defer resp.Body.Close()
-//	//
-//	//
-//	//b, err := httputil.DumpResponse(recorder.Body, true)
-//	//assert.NoError(t, err)
-//	//
-//	//usersResponse := make([]CreateUserResponse,0)
-//	//json.Unmarshal(recorder.Body, &usersResponse)
-//
-//	fmt.Println(recorder.Body)
-//}
+func TestUsersInChat(t *testing.T) {
+	defer func() {
+		err := truncateUsers()
+		assert.NoError(t, err)
+	}()
+	user, err := uHttp.userService.CreateUser(models.User{Name: user.UserName, Password: user.Password})
+	assert.NoError(t, err)
+	cHttp.chatService.SetUser(user)
+
+	req, err := http.NewRequest(http.MethodGet, "/v1/user", nil)
+	assert.NoError(t, err)
+
+	recorder := httptest.NewRecorder()
+	handler := http.HandlerFunc(cHttp.UsersInChat)
+	handler.ServeHTTP(recorder, req)
+
+	usersResponse := &[]CreateUserResponse{}
+	err = json.NewDecoder(recorder.Body).Decode(usersResponse)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+	assert.NotEmpty(t, usersResponse)
+}

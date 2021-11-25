@@ -23,6 +23,11 @@ type errorResponse struct {
 
 var db *sql.DB
 
+var user = CreateUserRequest{
+	"test_name",
+	"test_password",
+}
+
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
 	if err != nil {

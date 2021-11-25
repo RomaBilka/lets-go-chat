@@ -12,6 +12,7 @@ import (
 type chatService interface {
 	Reader(conn *websocket.Conn, id models.UserId) error
 	UsersInChat() map[models.UserId]models.User
+	SetUser(models.User)
 	Upgrader() websocket.Upgrader
 }
 
