@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"encoding/json"
@@ -13,12 +13,12 @@ type userService interface {
 	CreateUser(user models.User) (models.User, error)
 }
 
-type UserHTTP struct {
+type userHTTP struct {
 	userService userService
 }
 
-func NewUserHttp(userService userService) *UserHTTP {
-	return &UserHTTP{userService: userService}
+func NewUserHttp(userService userService) *userHTTP {
+	return &userHTTP{userService: userService}
 }
 
 type CreateUserRequest struct {
@@ -36,7 +36,7 @@ type CreateUserResponse struct {
 }
 
 //CreateUser creates new user, status code of 201
-func (h *UserHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *userHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)

@@ -1,4 +1,4 @@
-package auth
+package services
 
 import (
 	"fmt"
@@ -8,22 +8,22 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/pkg/token"
 )
 
-type userRepository interface {
+type authRepository interface {
 	GetUserByName(name string) (models.User, error)
 }
 
-type Service struct {
-	repository userRepository
+type AuthService struct {
+	repository authRepository
 }
 
-func NewService(repository userRepository) *Service {
-	return &Service{
+func NewAuthService(repository authRepository) *AuthService {
+	return &AuthService{
 		repository: repository,
 	}
 }
 
 //Login returns token
-func (s Service) Login(userName, password string) (string, error) {
+func (s AuthService) Login(userName, password string) (string, error) {
 
 	user, err := s.repository.GetUserByName(userName)
 	if user.Id == 0 {
