@@ -23,7 +23,7 @@ type errorResponse struct {
 
 var db *sql.DB
 
-var user = CreateUserRequest{
+var userTest = CreateUserRequest{
 	"test_name",
 	"test_password",
 }

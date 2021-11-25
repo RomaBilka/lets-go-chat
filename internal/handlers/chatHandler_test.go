@@ -52,7 +52,7 @@ func TestUsersInChat(t *testing.T) {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	user, err := uHttp.userService.CreateUser(models.User{Name: user.UserName, Password: user.Password})
+	user, err := uHttp.userService.CreateUser(models.User{Name: userTest.UserName, Password: userTest.Password})
 	assert.NoError(t, err)
 	cHttp.chatService.SetUser(user)
 

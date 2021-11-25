@@ -31,7 +31,7 @@ func TestCreateUser(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	recorder := createUser(t, user)
+	recorder := createUser(t, userTest)
 	assert.Equal(t, http.StatusCreated, recorder.Code)
 
 	userResponse := &CreateUserResponse{}
@@ -42,7 +42,7 @@ func TestCreateUser(t *testing.T) {
 	userInDb, err := testUserRepository.GetUserById(models.UserId(userResponse.Id))
 
 	assert.NoError(t, err)
-	assert.Equal(t, user.UserName, userInDb.Name)
+	assert.Equal(t, userTest.UserName, userInDb.Name)
 }
 
 func TestCreateSecondUser(t *testing.T) {
@@ -51,8 +51,8 @@ func TestCreateSecondUser(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	createUser(t, user)
-	recorder := createUser(t, user)
+	createUser(t, userTest)
+	recorder := createUser(t, userTest)
 
 	errorResponse := &errorResponse{}
 	err := json.NewDecoder(recorder.Body).Decode(errorResponse)
