@@ -6,10 +6,13 @@ import (
 	"os"
 	"testing"
 
+	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
 	"github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
+	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 	"github.com/joho/godotenv"
+	"github.com/stretchr/testify/assert"
 )
 
 var testUserRepository *repositories.UserRepository
@@ -72,4 +75,13 @@ func TestMain(m *testing.M) {
 func truncateUsers() error {
 	_, err := db.Query("TRUNCATE users")
 	return err
+}
+
+func createTestUser(t *testing.T) models.UserId {
+	hashPassword, err := hasher.HashPassword(login.Password)
+	assert.NoError(t, err)
+
+	userId, err := testUserRepository.CreateUser(models.User{Name: login.UserName, Password: hashPassword})
+	assert.NoError(t, err)
+	return userId
 }

@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
 	"github.com/RomaBiliak/lets-go-chat/pkg/token"
 	"github.com/gorilla/websocket"
@@ -52,7 +51,8 @@ func TestUsersInChat(t *testing.T) {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	user, err := uHttp.userService.CreateUser(models.User{Name: userTest.UserName, Password: userTest.Password})
+	userId := createTestUser(t)
+	user, err := testUserRepository.GetUserById(userId)
 	assert.NoError(t, err)
 	cHttp.chatService.SetUser(user)
 

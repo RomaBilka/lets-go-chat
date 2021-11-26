@@ -7,8 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/models"
-	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,14 +30,6 @@ func loginTest(t *testing.T, login loginRequest) *httptest.ResponseRecorder {
 	handler := http.HandlerFunc(aHttp.Login)
 	handler.ServeHTTP(recorder, req)
 	return recorder
-}
-
-func createTestUser(t *testing.T) {
-	hashPassword, err := hasher.HashPassword(login.Password)
-	assert.NoError(t, err)
-
-	_, err = testUserRepository.CreateUser(models.User{Name: login.UserName, Password: hashPassword})
-	assert.NoError(t, err)
 }
 
 func TestLogin(t *testing.T) {
