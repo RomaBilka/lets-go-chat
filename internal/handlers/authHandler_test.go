@@ -34,7 +34,7 @@ func loginTest(t *testing.T, login loginRequest) *httptest.ResponseRecorder {
 	return recorder
 }
 
-func createUser() {
+func createTestUser(t *testing.T) {
 	hashPassword, err := hasher.HashPassword(login.Password)
 	assert.NoError(t, err)
 
@@ -48,7 +48,7 @@ func TestLogin(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	createUser()
+	createTestUser(t)
 
 	recorder := loginTest(t, login)
 	responseToken := &responseToken{}
@@ -65,7 +65,7 @@ func TestLoginWrongPassword(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	createUser()
+	createTestUser(t)
 
 	l := login
 	l.Password = "error"
@@ -85,7 +85,7 @@ func TestLoginUserFound(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	createUser()
+	createTestUser(t)
 
 	l := login
 	l.UserName = "error"
@@ -105,7 +105,7 @@ func TestLoginEmptyLoginData(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	createUser()
+	createTestUser(t)
 
 	l := login
 	l.UserName = ""
