@@ -12,7 +12,6 @@ import (
 )
 
 func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder {
-
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(user)
 
@@ -22,6 +21,7 @@ func createUser(t *testing.T, user CreateUserRequest) *httptest.ResponseRecorder
 	recorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(uHttp.CreateUser)
 	handler.ServeHTTP(recorder, req)
+
 	return recorder
 }
 

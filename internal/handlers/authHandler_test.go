@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
+	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,18 +34,26 @@ func loginTest(t *testing.T, login loginRequest) *httptest.ResponseRecorder {
 	return recorder
 }
 
+func createUser() {
+	hashPassword, err := hasher.HashPassword(login.Password)
+	assert.NoError(t, err)
+
+	_, err = testUserRepository.CreateUser(models.User{Name: login.UserName, Password: hashPassword})
+	assert.NoError(t, err)
+}
+
 func TestLogin(t *testing.T) {
 	defer func() {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	_, err := uHttp.userService.CreateUser(models.User{Name: login.UserName, Password: login.Password})
-	assert.NoError(t, err)
+
+	createUser()
 
 	recorder := loginTest(t, login)
 	responseToken := &responseToken{}
 
-	err = json.NewDecoder(recorder.Body).Decode(responseToken)
+	err := json.NewDecoder(recorder.Body).Decode(responseToken)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, recorder.Code)
@@ -55,15 +64,15 @@ func TestLoginWrongPassword(t *testing.T) {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	_, err := uHttp.userService.CreateUser(models.User{Name: login.UserName, Password: login.Password})
-	assert.NoError(t, err)
+
+	createUser()
 
 	l := login
 	l.Password = "error"
 	recorder := loginTest(t, l)
 
 	errorResponse := &errorResponse{}
-	err = json.NewDecoder(recorder.Body).Decode(errorResponse)
+	err := json.NewDecoder(recorder.Body).Decode(errorResponse)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -75,15 +84,15 @@ func TestLoginUserFound(t *testing.T) {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	_, err := uHttp.userService.CreateUser(models.User{Name: login.UserName, Password: login.Password})
-	assert.NoError(t, err)
+
+	createUser()
 
 	l := login
 	l.UserName = "error"
 	recorder := loginTest(t, l)
 
 	errorResponse := &errorResponse{}
-	err = json.NewDecoder(recorder.Body).Decode(errorResponse)
+	err := json.NewDecoder(recorder.Body).Decode(errorResponse)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -95,8 +104,8 @@ func TestLoginEmptyLoginData(t *testing.T) {
 		err := truncateUsers()
 		assert.NoError(t, err)
 	}()
-	_, err := uHttp.userService.CreateUser(models.User{Name: login.UserName, Password: login.Password})
-	assert.NoError(t, err)
+
+	createUser()
 
 	l := login
 	l.UserName = ""
@@ -104,7 +113,7 @@ func TestLoginEmptyLoginData(t *testing.T) {
 	recorder := loginTest(t, l)
 
 	errorResponse := &errorResponse{}
-	err = json.NewDecoder(recorder.Body).Decode(errorResponse)
+	err := json.NewDecoder(recorder.Body).Decode(errorResponse)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
