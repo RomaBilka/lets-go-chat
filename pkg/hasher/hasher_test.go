@@ -1,8 +1,10 @@
 package hasher
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/bxcodec/faker/v3"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -35,5 +37,22 @@ func TestCheckPasswordHashEmptyPassword(t *testing.T) {
 
 	if ok {
 		t.Errorf("CheckPasswordHash works incorrectly")
+	}
+}
+
+func BenchmarkCalculate(b *testing.B) {
+	type Password struct {
+		password string `faker:"password"`
+	}
+	p := Password{}
+	err := faker.FakeData(&p)
+
+	if err != nil {
+		b.Errorf(err.Error())
+	}
+	fmt.Println(p.password)
+
+	for i := 0; i < b.N; i++ {
+		HashPassword(p.password)
 	}
 }

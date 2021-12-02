@@ -11,6 +11,7 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
 	"github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 	"github.com/RomaBiliak/lets-go-chat/pkg/hasher"
+	"github.com/bxcodec/faker/v3"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,16 +27,30 @@ type errorResponse struct {
 
 var db *sql.DB
 
-var userTest = CreateUserRequest{
-	"test_name",
-	"test_password",
+var userTest CreateUserRequest
+
+var login loginRequest
+
+type testData struct {
+	UserName string  `faker:"name"`
+	Password string `faker:"password"`
 }
+
+var test = testData{}
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
 	if err != nil {
 		panic(err)
 	}
+
+	err = faker.FakeData(&test)
+	if err != nil {
+		panic(err)
+	}
+
+	userTest = CreateUserRequest{test.UserName, test.Password}
+	login = loginRequest{test.UserName, test.Password}
 
 	pgUser, ok := os.LookupEnv("PG_USER")
 	if !ok {

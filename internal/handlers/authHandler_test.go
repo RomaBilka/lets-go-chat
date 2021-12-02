@@ -10,11 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var login = loginRequest{
-	"test_name",
-	"test_password",
-}
-
 type responseToken struct {
 	url string `json:"url"`
 }

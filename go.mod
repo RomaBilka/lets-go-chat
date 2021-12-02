@@ -6,6 +6,7 @@ require golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/bxcodec/faker/v3 v3.6.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/golang/mock v1.6.0

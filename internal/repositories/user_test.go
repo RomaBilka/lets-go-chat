@@ -19,14 +19,9 @@ func NewMock() (*sql.DB, sqlmock.Sqlmock) {
 	return db, mock
 }
 
-var user = models.User{
-	Id:       1,
-	Name:     "Test123",
-	Password: "pass",
-}
 
 func createUser(t *testing.T) models.UserId {
-	id, err := testUserRepository.CreateUser(user)
+	id, err := testUserRepository.CreateUser(models.User{Name: user.Name, Password: user.Password})
 
 	assert.NotNil(t, id)
 	assert.NoError(t, err)
@@ -41,7 +36,6 @@ func TestGetUserById(t *testing.T) {
 	id := createUser(t)
 
 	u, err := testUserRepository.GetUserById(id)
-
 	assert.Equal(t, u.Id, id)
 	assert.NoError(t, err)
 }
