@@ -2,22 +2,14 @@
 package main
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
-	"os"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/handlers"
-	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
-	"github.com/RomaBiliak/lets-go-chat/internal/services"
-	"github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
-	"github.com/RomaBiliak/lets-go-chat/pkg/log"
-	"github.com/RomaBiliak/lets-go-chat/pkg/middleware"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-
+/*
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
@@ -45,9 +37,9 @@ func main() {
 	defer db.Close()
 
 	userRepository := repositories.NewPostgreUserRepository(db)
-
+*/
 	mux := http.NewServeMux()
-
+/*
 	logStdout := log.NewLogStdout()
 
 	userService := services.NewUserService(userRepository)
@@ -62,7 +54,10 @@ func main() {
 	cHttp := handlers.NewChatHttp(chatService)
 	mux.Handle("/v1/ws", middleware.LogRequest(logStdout, middleware.Authentication(cHttp.Chat)))
 
-	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
+	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))*/
+	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
+		fmt.Fprintf(w, "Test")
+	})
 
 	httpServer.Start(":8080", mux)
 }
