@@ -1,0 +1,22 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0.4.0'
+        with:
+           credentials_json: '${{ secrets.GCP_SA_KEY }}'
+           project_id: 'go-learn-96427'
+
+
+      - id: deploy
+        uses: google-github-actions/deploy-appengine@v0.4.0
