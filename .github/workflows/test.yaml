@@ -19,6 +19,5 @@ jobs:
 
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0.4.0
-        
-      - name: run
-        run: gcloud app deploy
+        with:
+          deliverables: app.yaml
