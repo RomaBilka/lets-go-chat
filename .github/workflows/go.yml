@@ -20,6 +20,12 @@ jobs:
         with:
            workload_identity_provider: 'projects/3561524957/locations/global/workloadIdentityPools/github-pool-id/providers/github'
            service_account: 'go-learn-96427@appspot.gserviceaccount.com'
+           
+      - id: 'gcloud'
+        name: 'gcloud'
+        run: |-
+          gcloud auth login --brief --cred-file="${{ steps.auth.outputs.credentials_file_path }}"
+          gcloud services list
 
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0.4.0
