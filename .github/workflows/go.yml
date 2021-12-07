@@ -19,7 +19,7 @@ jobs:
         uses: 'google-github-actions/auth@v0.4.0'
         with:
            workload_identity_provider: 'projects/go-learn-96427/locations/global/workloadIdentityPools/github-pool-id/providers/github'
-           service_account: 'go-learn-96427@appspot.gserviceaccount.com'
+           service_account: '3561524957@cloudbuild.gserviceaccount.com'
            
       - id: 'gcloud'
         name: 'gcloud'
