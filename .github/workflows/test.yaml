@@ -16,7 +16,10 @@ jobs:
         with:
            credentials_json: '${{ secrets.GCP_SA_KEY }}'
            project_id: 'go-learn-96427'
-           
+        
+      - id: t
+        run: ls
+        
       - id: deploy
-        uses: google-github-actions/deploy-appengine@v0.3.0
+        uses: google-github-actions/deploy-appengine@v0.4.0
 
