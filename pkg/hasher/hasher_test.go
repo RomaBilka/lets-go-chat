@@ -1,7 +1,6 @@
 package hasher
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/bxcodec/faker/v3"
@@ -13,9 +12,7 @@ var password string = "test_password"
 func TestHashPassword(t *testing.T) {
 	hash, _ := HashPassword(password)
 
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-
-	if err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
 		t.Errorf("Hash Password is wrong")
 	}
 }
@@ -23,9 +20,7 @@ func TestHashPassword(t *testing.T) {
 func TestCheckPasswordHash(t *testing.T) {
 	hash, _ := HashPassword(password)
 
-	ok := CheckPasswordHash(password, hash)
-
-	if !ok {
+	if ok := CheckPasswordHash(password, hash); !ok {
 		t.Errorf("CheckPasswordHash works incorrectly")
 	}
 }
@@ -33,9 +28,7 @@ func TestCheckPasswordHash(t *testing.T) {
 func TestCheckPasswordHashEmptyPassword(t *testing.T) {
 	hash, _ := HashPassword(password)
 
-	ok := CheckPasswordHash("", hash)
-
-	if ok {
+	if ok := CheckPasswordHash("", hash); ok {
 		t.Errorf("CheckPasswordHash works incorrectly")
 	}
 }
@@ -45,12 +38,10 @@ func BenchmarkCalculate(b *testing.B) {
 		password string `faker:"password"`
 	}
 	p := Password{}
-	err := faker.FakeData(&p)
 
-	if err != nil {
+	if err := faker.FakeData(&p); err != nil {
 		b.Errorf(err.Error())
 	}
-	fmt.Println(p.password)
 
 	for i := 0; i < b.N; i++ {
 		HashPassword(p.password)

@@ -35,7 +35,6 @@ func TestCreateUserAPI(t *testing.T) {
 				err := json.NewDecoder(recorder.Body).Decode(userResponse)
 
 				assert.NoError(t, err)
-				assert.NoError(t, err)
 				assert.Equal(t, userTest.UserName, userResponse.UserName)
 				assert.Equal(t, uint64(1), userResponse.Id)
 			},
