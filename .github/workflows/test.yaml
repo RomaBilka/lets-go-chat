@@ -20,8 +20,4 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0.4.0
         with:
-          deliverables: app.yaml
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
-          project_id: 'go-learn-96427'
-
-
+          deliverables: 'app.yaml'
