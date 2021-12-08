@@ -20,7 +20,7 @@ jobs:
         with:
            token_format: 'access_token'
            workload_identity_provider: 'projects/3561524957/locations/global/workloadIdentityPools/github-pool-id/providers/github'
-           service_account: 'lets-go-chat-273@go-learn-96427.iam.gserviceaccount.com'
+           service_account: 'go-learn-96427@appspot.gserviceaccount.com'
            project_id: 'go-learn-96427'
            
       - id: 'access-secret'
