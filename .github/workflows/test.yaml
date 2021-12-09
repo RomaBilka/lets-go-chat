@@ -20,6 +20,7 @@ jobs:
         with:
            credentials_json: '${{ secrets.GCP_SA_KEY }}'
            project_id: 'go-learn-96427'
+           service_account: 'go-learn-96427@appspot.gserviceaccount.com'
 
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0.4.0
