@@ -56,7 +56,7 @@ func main() {
 
 	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))*/
 	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
-		fmt.Fprintf(w, "Test 2")
+		fmt.Fprintf(w, "Test 3")
 	})
 
 	httpServer.Start(":8080", mux)
