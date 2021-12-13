@@ -22,4 +22,10 @@ jobs:
 
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0.5.0
+        env:
+          PG_USER: ppp
+          PG_PASSWORD: qqq
+          PG_DATABASE: qqq
+          PG_TEST_DATABASE: qqq
+          API_SECRET: qqq
 
