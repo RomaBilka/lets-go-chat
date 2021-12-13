@@ -12,10 +12,7 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	godotenv.Load()
 
 	pgUser, _ := os.LookupEnv("PG_USER")
 	/*if !ok {
