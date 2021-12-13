@@ -4,19 +4,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	httpServer "github.com/RomaBiliak/lets-go-chat/pkg/http"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-/*
+
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
 
-	pgUser, ok := os.LookupEnv("PG_USER")
-	if !ok {
+	pgUser, _ := os.LookupEnv("PG_USER")
+	/*if !ok {
 		panic(errors.New("PG_USER is empty"))
 	}
 	pgPassword, ok := os.LookupEnv("PG_PASSWORD")
@@ -26,8 +28,8 @@ func main() {
 	pgDatabase, ok := os.LookupEnv("PG_DATABASE")
 	if !ok {
 		panic(errors.New("PG_DATABASE is empty"))
-	}
-
+	}*/
+/*
 	dbConfig := postgres.Config{
 		pgUser,
 		pgPassword,
@@ -56,6 +58,7 @@ func main() {
 
 	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))*/
 	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
+		fmt.Fprintf(w, pgUser)
 		fmt.Fprintf(w, "Test 3")
 	})
 
