@@ -14,6 +14,7 @@ type Config struct {
 	User     string
 	Password string
 	Database string
+	Host string
 }
 
 func Run(config Config) *sql.DB {
@@ -24,7 +25,7 @@ func Run(config Config) *sql.DB {
 
 func connect(config Config) *sql.DB {
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", config.User, config.Password, config.Database)
+	connStr := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable", config.User, config.Password, config.Host, config.Database)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {

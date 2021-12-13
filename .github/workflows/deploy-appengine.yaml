@@ -17,12 +17,13 @@ jobs:
         
       - uses: golang-enthusiast/app-yaml-env-compiler@v1.0
         env:
-          PG_USER: ppp
-          PG_PASSWORD: qqq
-          PG_DATABASE: qqq
-          PG_TEST_DATABASE: qqq
-          API_SECRET: qqq
-    
+          PG_USER: '${{ secrets.PG_USER }}'
+          PG_PASSWORD: '${{ secrets.PG_PASSWORD }}'
+          PG_DATABASE: '${{ secrets.PG_DATABASE }}'
+          PG_TEST_DATABASE: '${{ secrets.PG_TEST_DATABASE }}'
+          PG_HOST: '${{ secrets.PG_HOST }}'
+          API_SECRET: '${{ secrets.API_SECRET }}'
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0.4.3'
         with:
