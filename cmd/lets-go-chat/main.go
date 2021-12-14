@@ -73,7 +73,3 @@ func main() {
 
 	httpServer.Start(":8080", mux)
 }
-
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "home.html")
-}

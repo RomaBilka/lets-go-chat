@@ -26,7 +26,6 @@ func (l *Log) AddMessage(key, value string) {
 }
 
 func (l *Log) Print() {
-
 	_, err := io.WriteString(os.Stdout, fmt.Sprintf("========= Start: %s =========\n", l.name))
 
 	for key, value := range l.messages {

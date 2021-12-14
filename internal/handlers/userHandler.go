@@ -37,7 +37,6 @@ type CreateUserResponse struct {
 
 //CreateUser creates new user, status code of 201
 func (h *userHTTP) CreateUser(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodPost {
 		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)
 		return

@@ -21,12 +21,12 @@ func NewAuthHttp(authService authService) *authHTTP {
 	return &authHTTP{authService: authService}
 }
 
-type LoginRequest struct {
+type loginRequest struct {
 	UserName string `json:"userName"`
 	Password string `json:"password"`
 }
 
-func (r *LoginRequest) validate() bool {
+func (r *loginRequest) validate() bool {
 	return len(r.UserName) > 0 && len(r.Password) > 0
 }
 
@@ -41,7 +41,7 @@ func (h *authHTTP) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginRequest := &LoginRequest{}
+	loginRequest := &loginRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(loginRequest)
 	if err != nil {
