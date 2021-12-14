@@ -3,6 +3,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -18,10 +19,7 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	godotenv.Load()
 
 	pgUser, ok := os.LookupEnv("PG_USER")
 	if !ok {
@@ -30,6 +28,10 @@ func main() {
 	pgPassword, ok := os.LookupEnv("PG_PASSWORD")
 	if !ok {
 		panic(errors.New("PG_PASSWORD is empty"))
+	}
+	pgHost, ok := os.LookupEnv("PG_HOST")
+	if !ok {
+		panic(errors.New("Db Host is empty"))
 	}
 	pgDatabase, ok := os.LookupEnv("PG_DATABASE")
 	if !ok {
@@ -40,6 +42,7 @@ func main() {
 		pgUser,
 		pgPassword,
 		pgDatabase,
+        pgHost,
 	}
 	db := postgres.Run(dbConfig)
 	defer db.Close()
@@ -63,6 +66,10 @@ func main() {
 	mux.Handle("/v1/ws", middleware.LogRequest(logStdout, middleware.Authentication(cHttp.Chat)))
 
 	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
+	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
+		fmt.Fprintf(w, pgUser)
+		fmt.Fprintf(w, "Test 4")
+	})
 
 	httpServer.Start(":8080", mux)
 }
