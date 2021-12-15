@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"log"
+	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -17,6 +18,48 @@ func NewMock() (*sql.DB, sqlmock.Sqlmock) {
 	}
 
 	return db, mock
+}
+
+func TestGetUserByIdV2(t *testing.T) {
+	db, mock := NewMock()
+	repo := NewPostgreUserRepository(db)
+
+	query := regexp.QuoteMeta("SELECT * FROM users WHERE id=$1")
+	rows := sqlmock.NewRows([]string{"id", "name", "email"}).AddRow(1, user.Name, user.Password)
+	mock.ExpectQuery(query).WithArgs(1).WillReturnRows(rows)
+
+	user, err := repo.GetUserById(1)
+
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+}
+
+func TestGetUserByNameV2(t *testing.T) {
+	db, mock := NewMock()
+	repo := NewPostgreUserRepository(db)
+
+	query := regexp.QuoteMeta("SELECT * FROM users WHERE name=$1")
+	rows := sqlmock.NewRows([]string{"id", "name", "email"}).AddRow(1, user.Name, user.Password)
+	mock.ExpectQuery(query).WithArgs(user.Name).WillReturnRows(rows)
+
+	user, err := repo.GetUserByName(user.Name)
+
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+}
+
+func TestCheckUserExistsV2(t *testing.T) {
+	db, mock := NewMock()
+	repo := NewPostgreUserRepository(db)
+
+	query := regexp.QuoteMeta("SELECT id FROM users WHERE name=$1")
+	rows := sqlmock.NewRows([]string{"id"}).AddRow(1)
+	mock.ExpectQuery(query).WithArgs(user.Name).WillReturnRows(rows)
+
+	ok, err := repo.CheckUserExists(user.Name)
+
+	assert.True(t, ok)
+	assert.NoError(t, err)
 }
 
 
