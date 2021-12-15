@@ -43,11 +43,16 @@ func TestMain(m *testing.M) {
 	if !ok {
 		panic(errors.New("PG_TEST_DATABASE is empty"))
 	}
+	pgHost, ok := os.LookupEnv("PG_HOST")
+	if !ok {
+		panic(errors.New("Db Host is empty"))
+	}
 
 	dbConfig := postgres.Config{
 		pgUser,
 		pgPassword,
 		pgDatabase,
+		pgHost,
 	}
 	db := postgres.Run(dbConfig)
 	defer db.Close()

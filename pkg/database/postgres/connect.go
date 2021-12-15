@@ -3,6 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"path"
+	"runtime"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -14,7 +16,7 @@ type Config struct {
 	User     string
 	Password string
 	Database string
-	Host string
+	Host     string
 }
 
 func Run(config Config) *sql.DB {
@@ -36,13 +38,22 @@ func connect(config Config) *sql.DB {
 }
 
 func migrateRun(db *sql.DB) {
+
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://../../database/migrations",
+		"file://" + migrationsDirPath(),
 		"postgres", driver)
 
 	err = m.Up()
 	if err == migrate.ErrNoChange {
 		fmt.Println("no new migrations")
 	}
+}
+
+func migrationsDirPath() string {
+	_, pathConnect, _, ok := runtime.Caller(1)
+	if !ok {
+		panic("cannot extract file path")
+	}
+	return path.Join(path.Dir(pathConnect), "../../../database/migrations")
 }
