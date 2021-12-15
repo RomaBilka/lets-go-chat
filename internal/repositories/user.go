@@ -59,7 +59,6 @@ func (r *UserRepository) GetUserById(id models.UserId) (models.User, error) {
 func (r *UserRepository) CreateUser(user models.User) (models.UserId, error) {
 	id := 0
 	err := r.db.QueryRow("INSERT INTO users (name, password) VALUES ($1, $2)  RETURNING id", user.Name, user.Password).Scan(&id)
-
 	if err != nil {
 		return 0, err
 	}
