@@ -1,18 +1,19 @@
-name: release-please
+name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  update_release_draft:
+  release:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
 
     steps:
-      - uses: google-github-actions/release-please-action@v2
-        with:
-          release-type: php
-      - uses: actions/checkout@v2
-        if: ${{ steps.release.outputs.release_created }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Semantic Release
+        uses: codfish/semantic-release-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
