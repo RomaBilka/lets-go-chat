@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"path"
 	"runtime"
 
@@ -41,8 +42,7 @@ func migrateRun(db *sql.DB) {
 
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		//"file://" + migrationsDirPath(),
-		"file://database/migrations",
+		"file://"+migrationsDirPath(),
 		"postgres", driver)
 
 	err = m.Up()
@@ -54,7 +54,12 @@ func migrateRun(db *sql.DB) {
 func migrationsDirPath() string {
 	_, pathConnect, _, ok := runtime.Caller(1)
 	if !ok {
-		panic("cannot extract file path")
+		panic("cannot extract files path")
 	}
-	return path.Join(path.Dir(pathConnect), "../../../database/migrations")
+	p := path.Join(path.Dir(pathConnect), "../../../database/migrations")
+
+	if _, err := os.Stat(p); !os.IsNotExist(err) {
+		return p
+	}
+	return "database/migrations"
 }
