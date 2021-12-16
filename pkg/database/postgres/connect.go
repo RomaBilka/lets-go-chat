@@ -42,7 +42,7 @@ func migrateRun(db *sql.DB) {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
 		//"file://" + migrationsDirPath(),
-		"file://database/migrations" + migrationsDirPath(),
+		"file://database/migrations",
 		"postgres", driver)
 
 	err = m.Up()
