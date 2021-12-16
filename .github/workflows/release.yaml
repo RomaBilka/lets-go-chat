@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - with:
+          branch: main
       - name: Checkout
         uses: actions/checkout@v2
       - name: Semantic Release
