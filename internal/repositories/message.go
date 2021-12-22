@@ -6,8 +6,8 @@ import (
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 )
 
-func NewPostgre2MessageRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{
+func NewPostgreMessageRepository(db *sql.DB) *MessageRepository {
+	return &MessageRepository{
 		db: db,
 	}
 }
@@ -16,7 +16,7 @@ type MessageRepository struct {
 	db *sql.DB
 }
 
-func (r *UserRepository) GetMessages() ([]models.Message, error) {
+func (r *MessageRepository) GetMessages() ([]models.Message, error) {
 	messages := []models.Message{}
 
 	rows, err := r.db.Query("SELECT * FROM messages")
@@ -37,8 +37,7 @@ func (r *UserRepository) GetMessages() ([]models.Message, error) {
 	return messages, nil
 }
 
-
-func (r *UserRepository) CreateMessage(message models.Message) (models.MessageId, error) {
+func (r *MessageRepository) CreateMessage(message models.Message) (models.MessageId, error) {
 	id := 0
 	err := r.db.QueryRow("INSERT INTO messages (user_id, message) VALUES ($1, $2)  RETURNING id", message.UserId, message.Message).Scan(&id)
 	if err != nil {

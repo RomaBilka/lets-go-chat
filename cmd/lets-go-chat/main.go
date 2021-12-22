@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/handlers"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
@@ -48,6 +49,7 @@ func main() {
 	defer db.Close()
 
 	userRepository := repositories.NewPostgreUserRepository(db)
+	messageRepository := repositories.NewPostgreMessageRepository(db)
 
 	mux := http.NewServeMux()
 
@@ -61,14 +63,17 @@ func main() {
 	aHttp := handlers.NewAuthHttp(authService)
 	mux.Handle("/v1/user/login", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, aHttp.Login))))
 
-	chatService := services.NewChatService(userRepository)
+	newChat:=chat.NewChat(messageRepository)
+	go newChat.Run()
+	chatService := services.NewChatService(userRepository, newChat)
 	cHttp := handlers.NewChatHttp(chatService)
 	mux.Handle("/v1/ws", middleware.LogRequest(logStdout, middleware.Authentication(cHttp.Chat)))
 
-	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
+	//mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
+
 	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
 		fmt.Fprintf(w, pgUser)
-		fmt.Fprintf(w, "Test 4")
+		fmt.Fprintf(w, "Index")
 	})
 
 	httpServer.Start(":8080", mux)
