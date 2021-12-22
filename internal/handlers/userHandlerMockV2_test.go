@@ -45,7 +45,7 @@ func TestCreateUserAPIV2(t *testing.T) {
 			method: http.MethodGet,
 			create: func(mockUserService *mocks.UserService) {
 				//mockUserService.On("CreateUser", models.User{}).Times(0)
-				mockUserService.On("CreateUser",  mock.Anything).Times(0)
+				mockUserService.On("CreateUser", mock.Anything).Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusMethodNotAllowed, recorder.Code)

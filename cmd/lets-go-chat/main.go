@@ -43,7 +43,7 @@ func main() {
 		pgUser,
 		pgPassword,
 		pgDatabase,
-        pgHost,
+		pgHost,
 	}
 	db := postgres.Run(dbConfig)
 	defer db.Close()
@@ -63,7 +63,7 @@ func main() {
 	aHttp := handlers.NewAuthHttp(authService)
 	mux.Handle("/v1/user/login", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, aHttp.Login))))
 
-	newChat:=chat.NewChat(messageRepository)
+	newChat := chat.NewChat(messageRepository)
 	go newChat.Run()
 	chatService := services.NewChatService(userRepository, newChat)
 	cHttp := handlers.NewChatHttp(chatService)
@@ -71,7 +71,7 @@ func main() {
 
 	//mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
 
-	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, pgUser)
 		fmt.Fprintf(w, "Index")
 	})

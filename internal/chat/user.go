@@ -15,16 +15,16 @@ type userInChat struct {
 }
 
 func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
-	u:= &userInChat{user, connect, c, make(chan []byte)}
+	u := &userInChat{user, connect, c, make(chan []byte)}
 	c.users[u] = true
 	messages, err := u.chat.messageRepository.GetMessages()
 	if err != nil {
 		return err
 	}
 
-	for _, message:= range messages {
+	for _, message := range messages {
 		fmt.Println(message.Message)
-		go func (){
+		go func() {
 			u.send <- []byte(message.Message)
 		}()
 	}
@@ -44,14 +44,14 @@ func (user userInChat) Read() {
 		if err != nil {
 			break
 		}
-		user.chat.broadcast<-p
+		user.chat.broadcast <- p
 	}
 }
 func (user userInChat) Write() {
 	for {
-		select{
-			case messahe:=<-user.send:
-				user.conn.WriteMessage(websocket.TextMessage, messahe)
+		select {
+		case messahe := <-user.send:
+			user.conn.WriteMessage(websocket.TextMessage, messahe)
 		}
 	}
 }

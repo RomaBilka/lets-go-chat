@@ -27,7 +27,7 @@ func (r *MessageRepository) GetMessages() ([]models.Message, error) {
 
 	for rows.Next() {
 		message := models.Message{}
-		if err := rows.Scan(&message.Id, &message.UserId, &message.Message,  &message.CreatedAt); err != nil && err != sql.ErrNoRows {
+		if err := rows.Scan(&message.Id, &message.UserId, &message.Message, &message.CreatedAt); err != nil && err != sql.ErrNoRows {
 			return []models.Message{}, err
 		}
 

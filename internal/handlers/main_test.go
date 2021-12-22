@@ -32,7 +32,7 @@ var userTest CreateUserRequest
 var login loginRequest
 
 type testData struct {
-	UserName string  `faker:"name"`
+	UserName string `faker:"name"`
 	Password string `faker:"password"`
 }
 

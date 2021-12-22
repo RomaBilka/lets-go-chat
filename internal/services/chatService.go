@@ -32,7 +32,7 @@ func NewChatService(repository chatRepository, chat *chat.Chat) *ChatService {
 
 	return &ChatService{
 		repository: repository,
-		chat: chat,
+		chat:       chat,
 		upgrader:   upgrader,
 	}
 }
