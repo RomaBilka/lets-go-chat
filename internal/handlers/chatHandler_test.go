@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -37,10 +38,11 @@ func TestChat(t *testing.T) {
 	message := "test message"
 	assert.NoError(t, err)
 
-	err = ws.WriteMessage(websocket.BinaryMessage, []byte(message))
+	err = ws.WriteMessage(websocket.TextMessage, []byte(message))
 	assert.NoError(t, err)
 
 	_, readMessage, err := ws.ReadMessage()
+	fmt.Println(readMessage)
 	assert.NoError(t, err)
 
 	assert.Equal(t, message, string(readMessage))
@@ -54,7 +56,8 @@ func TestUsersInChat(t *testing.T) {
 	userId := createTestUser(t)
 	user, err := testUserRepository.GetUserById(userId)
 	assert.NoError(t, err)
-	cHttp.chatService.SetUser(user)
+
+	cHttp.chatService.AddUserToChat(user, &websocket.Conn{})
 
 	req, err := http.NewRequest(http.MethodGet, "/v1/user", nil)
 	assert.NoError(t, err)

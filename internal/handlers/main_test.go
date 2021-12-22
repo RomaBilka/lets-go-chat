@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
@@ -17,6 +18,7 @@ import (
 )
 
 var testUserRepository *repositories.UserRepository
+var testMessageRepository *repositories.MessageRepository
 var uHttp *userHTTP
 var aHttp *authHTTP
 var cHttp *chatHTTP
@@ -79,6 +81,7 @@ func TestMain(m *testing.M) {
 
 	defer db.Close()
 	testUserRepository = repositories.NewPostgreUserRepository(db)
+	testMessageRepository = repositories.NewPostgreMessageRepository(db)
 
 	userService := services.NewUserService(testUserRepository)
 	uHttp = NewUserHttp(userService)
@@ -86,14 +89,15 @@ func TestMain(m *testing.M) {
 	authService := services.NewAuthService(testUserRepository)
 	aHttp = NewAuthHttp(authService)
 
-	cService := services.NewChatService(testUserRepository)
+	caht := chat.NewChat(testMessageRepository)
+	cService := services.NewChatService(testUserRepository, caht)
 	cHttp = NewChatHttp(cService)
 
 	os.Exit(m.Run())
 }
 
 func truncateUsers() error {
-	_, err := db.Query("TRUNCATE users")
+	_, err := db.Query("TRUNCATE users CASCADE")
 	return err
 }
 
