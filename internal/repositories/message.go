@@ -16,6 +16,16 @@ type MessageRepository struct {
 	db *sql.DB
 }
 
+func (r *MessageRepository) CreateMessage(message models.Message) (models.MessageId, error) {
+	id := 0
+	err := r.db.QueryRow("INSERT INTO messages (user_id, message) VALUES ($1, $2)  RETURNING id", message.UserId, message.Message).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return models.MessageId(id), nil
+}
+
 func (r *MessageRepository) GetMessages() ([]models.Message, error) {
 	messages := []models.Message{}
 
@@ -35,14 +45,4 @@ func (r *MessageRepository) GetMessages() ([]models.Message, error) {
 	}
 
 	return messages, nil
-}
-
-func (r *MessageRepository) CreateMessage(message models.Message) (models.MessageId, error) {
-	id := 0
-	err := r.db.QueryRow("INSERT INTO messages (user_id, message) VALUES ($1, $2)  RETURNING id", message.UserId, message.Message).Scan(&id)
-	if err != nil {
-		return 0, err
-	}
-
-	return models.MessageId(id), nil
 }
