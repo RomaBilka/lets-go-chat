@@ -10,11 +10,9 @@ import (
 )
 
 type chatService interface {
-	Reader(conn *websocket.Conn, id models.UserId) error
 	GetUserById(id models.UserId) (models.User, error)
-	AddUserToChat(user models.User, connect *websocket.Conn)
-	//UsersInChat() map[models.UserId]models.User
-	//SetUser(models.User)
+	AddUserToChat(user models.User, connect *websocket.Conn) error
+	UsersInChat() []models.User
 	Upgrader() websocket.Upgrader
 }
 
@@ -49,17 +47,13 @@ func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.chatService.AddUserToChat(user, connect)
-
-	//go h.chatService.Reader(connect)
-
-	//if err != nil {
-	//	response.WriteERROR(w, http.StatusBadRequest, err)
-	//	return
-	//}
+	err = h.chatService.AddUserToChat(user, connect)
+	if err != nil {
+		response.WriteERROR(w, http.StatusBadRequest, err)
+		return
+	}
 }
 
-/*
 func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		response.WriteERROR(w, http.StatusMethodNotAllowed, nil)
@@ -70,11 +64,9 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 		Id       uint64 `json:"id"`
 		UserName string `json:"userName"`
 	}
+	var users []CreateUserResponse
 
-	activeUsers := h.chatService.UsersInChat()
-	users := make([]CreateUserResponse, len(activeUsers))
-
-	for _, user := range activeUsers {
+	for _, user := range h.chatService.UsersInChat() {
 		users = append(users, CreateUserResponse{
 			uint64(user.Id),
 			user.Name,
@@ -83,4 +75,3 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJSON(w, http.StatusCreated, users)
 }
-*/

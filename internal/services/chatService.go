@@ -12,10 +12,6 @@ type chatRepository interface {
 	GetUserById(id models.UserId) (models.User, error)
 }
 
-//type chat interface {
-//	GetUserById(id models.UserId) (models.User, error)
-//}
-
 type ChatService struct {
 	repository chatRepository
 	upgrader   websocket.Upgrader
@@ -45,38 +41,10 @@ func (s ChatService) GetUserById(id models.UserId) (models.User, error) {
 	return s.repository.GetUserById(id)
 }
 
-func (s ChatService) AddUserToChat(user models.User, connect *websocket.Conn) {
-	s.chat.AddUserToChat(user, connect)
+func (s ChatService) AddUserToChat(user models.User, connect *websocket.Conn)error {
+	return s.chat.AddUserToChat(user, connect)
 }
 
-//func (s ChatService) UsersInChat() map[models.UserId]models.User {
-//	return users
-//}
-//
-//func (s ChatService) SetUser(user models.User) {
-//	users[user.Id] = user
-//}
-
-func (s ChatService) Reader(conn *websocket.Conn, userId models.UserId) error {
-	//	user, err := s.repository.GetUserById(userId)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	s.SetUser(user)
-
-	defer func() {
-		//		delete(users, userId)
-		conn.Close()
-	}()
-
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			return err
-		}
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			return err
-		}
-	}
+func (s ChatService) UsersInChat() []models.User {
+	return s.chat.UserInChat()
 }
