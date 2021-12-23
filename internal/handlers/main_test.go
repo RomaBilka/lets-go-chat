@@ -17,10 +17,8 @@ import (
 )
 
 var testUserRepository *repositories.UserRepository
-var testMessageRepository *repositories.MessageRepository
 var uHttp *userHTTP
 var aHttp *authHTTP
-var cHttp *chatHTTP
 
 type errorResponse struct {
 	Error string `json:"error"`
@@ -80,18 +78,12 @@ func TestMain(m *testing.M) {
 
 	defer db.Close()
 	testUserRepository = repositories.NewPostgreUserRepository(db)
-	testMessageRepository = repositories.NewPostgreMessageRepository(db)
 
 	userService := services.NewUserService(testUserRepository)
 	uHttp = NewUserHttp(userService)
 
 	authService := services.NewAuthService(testUserRepository)
 	aHttp = NewAuthHttp(authService)
-
-	//caht := chat.NewChat(testMessageRepository)
-	//go caht.Run()
-	//cService := services.NewChatService(testUserRepository, caht)
-	//cHttp = NewChatHttp(cService)
 
 	os.Exit(m.Run())
 }
