@@ -72,7 +72,6 @@ func main() {
 	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, pgUser)
 		fmt.Fprintf(w, "Index")
 	})
 
