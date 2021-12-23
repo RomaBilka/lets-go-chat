@@ -31,3 +31,11 @@ func (h *Chat) Run() {
 		}
 	}
 }
+
+func (c *Chat) UsersInChat() []models.User {
+	var users []models.User
+	for _, user := range c.users {
+		users = append(users, user.user)
+	}
+	return users
+}

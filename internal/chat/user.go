@@ -1,8 +1,6 @@
 package chat
 
 import (
-	"fmt"
-
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/gorilla/websocket"
 )
@@ -16,7 +14,7 @@ type userInChat struct {
 
 func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
 	u := &userInChat{user, connect, c, make(chan []byte)}
-	if activeUser, ok:=c.users[user.Id]; ok{
+	if activeUser, ok := c.users[user.Id]; ok {
 		activeUser.conn.Close()
 	}
 	c.users[user.Id] = u
@@ -33,17 +31,8 @@ func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
 	return nil
 }
 
-func (c *Chat) UserInChat() []models.User {
-	var users []models.User
-	for _, user := range c.users {
-		users=append(users, user.user)
-	}
-	fmt.Println(c.users )
-	return users
-}
-
 func (user userInChat) Read() {
-	defer func(){
+	defer func() {
 		user.conn.Close()
 		delete(user.chat.users, user.user.Id)
 	}()

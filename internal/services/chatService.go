@@ -3,7 +3,6 @@ package services
 import (
 	"net/http"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/gorilla/websocket"
 )
@@ -12,13 +11,18 @@ type chatRepository interface {
 	GetUserById(id models.UserId) (models.User, error)
 }
 
+type chat interface {
+	AddUserToChat(user models.User, connect *websocket.Conn) error
+	UsersInChat() []models.User
+}
+
 type ChatService struct {
 	repository chatRepository
 	upgrader   websocket.Upgrader
-	chat       *chat.Chat
+	chat       chat
 }
 
-func NewChatService(repository chatRepository, chat *chat.Chat) *ChatService {
+func NewChatService(repository chatRepository, chat chat) *ChatService {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -41,10 +45,10 @@ func (s ChatService) GetUserById(id models.UserId) (models.User, error) {
 	return s.repository.GetUserById(id)
 }
 
-func (s ChatService) AddUserToChat(user models.User, connect *websocket.Conn)error {
+func (s ChatService) AddUserToChat(user models.User, connect *websocket.Conn) error {
 	return s.chat.AddUserToChat(user, connect)
 }
 
 func (s ChatService) UsersInChat() []models.User {
-	return s.chat.UserInChat()
+	return s.chat.UsersInChat()
 }

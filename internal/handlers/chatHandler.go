@@ -60,10 +60,6 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type CreateUserResponse struct {
-		Id       uint64 `json:"id"`
-		UserName string `json:"userName"`
-	}
 	var users []CreateUserResponse
 
 	for _, user := range h.chatService.UsersInChat() {

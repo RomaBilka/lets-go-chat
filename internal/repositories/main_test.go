@@ -23,7 +23,7 @@ type testUser struct {
 }
 
 type testMessage struct {
-	UserId     int `faker:"oneof: 1, 2"`
+	UserId  int    `faker:"oneof: 1, 2"`
 	Message string `faker:"sentence"`
 }
 

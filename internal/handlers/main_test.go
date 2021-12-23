@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
@@ -89,9 +88,10 @@ func TestMain(m *testing.M) {
 	authService := services.NewAuthService(testUserRepository)
 	aHttp = NewAuthHttp(authService)
 
-	caht := chat.NewChat(testMessageRepository)
-	cService := services.NewChatService(testUserRepository, caht)
-	cHttp = NewChatHttp(cService)
+	//caht := chat.NewChat(testMessageRepository)
+	//go caht.Run()
+	//cService := services.NewChatService(testUserRepository, caht)
+	//cHttp = NewChatHttp(cService)
 
 	os.Exit(m.Run())
 }
