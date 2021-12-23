@@ -62,7 +62,6 @@ func TestCheckUserExistsV2(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-
 func createUser(t *testing.T) models.UserId {
 	id, err := testUserRepository.CreateUser(models.User{Name: user.Name, Password: user.Password})
 
