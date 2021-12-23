@@ -42,7 +42,7 @@ func main() {
 		pgUser,
 		pgPassword,
 		pgDatabase,
-        pgHost,
+		pgHost,
 	}
 	db := postgres.Run(dbConfig)
 	defer db.Close()
@@ -66,7 +66,7 @@ func main() {
 	mux.Handle("/v1/ws", middleware.LogRequest(logStdout, middleware.Authentication(cHttp.Chat)))
 
 	mux.Handle("/v1/user/active", middleware.LogRequest(logStdout, middleware.LogError(logStdout, middleware.LogPanic(logStdout, cHttp.UsersInChat))))
-	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request){
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, pgUser)
 		fmt.Fprintf(w, "Test 4")
 	})

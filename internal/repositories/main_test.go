@@ -13,12 +13,11 @@ import (
 var testUserRepository *UserRepository
 
 type testUser struct {
-	Name string  `faker:"name"`
+	Name     string `faker:"name"`
 	Password string `faker:"password"`
 }
 
 var user = testUser{}
-
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
