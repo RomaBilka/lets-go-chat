@@ -24,7 +24,11 @@ func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
 	}
 
 	for _, message := range messages {
-		connect.WriteMessage(websocket.TextMessage, []byte(message.Message))
+		err := connect.WriteMessage(websocket.TextMessage, []byte(message.Message))
+
+		if err != nil {
+			return err
+		}
 	}
 	go u.Read()
 	go u.Write()

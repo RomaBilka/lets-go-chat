@@ -32,6 +32,7 @@ func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
 	}
+
 	user, err := h.chatService.GetUserById(models.UserId(useId))
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
@@ -39,7 +40,6 @@ func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	upgrader := h.chatService.Upgrader()
-
 	connect, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
