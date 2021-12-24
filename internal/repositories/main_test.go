@@ -1,23 +1,34 @@
 package repositories
 
 import (
+	"database/sql"
 	"errors"
+	"log"
 	"os"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/RomaBiliak/lets-go-chat/pkg/database/postgres"
 	"github.com/bxcodec/faker/v3"
 	"github.com/joho/godotenv"
 )
 
 var testUserRepository *UserRepository
+var testMessageRepository *MessageRepository
+var db *sql.DB
 
 type testUser struct {
 	Name     string `faker:"name"`
 	Password string `faker:"password"`
 }
 
+type testMessage struct {
+	UserId  int    `faker:"oneof: 1, 2"`
+	Message string `faker:"sentence"`
+}
+
 var user = testUser{}
+var message = testMessage{}
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
@@ -26,6 +37,11 @@ func TestMain(m *testing.M) {
 	}
 
 	err = faker.FakeData(&user)
+	if err != nil {
+		panic(err)
+	}
+
+	err = faker.FakeData(&message)
 	if err != nil {
 		panic(err)
 	}
@@ -53,9 +69,25 @@ func TestMain(m *testing.M) {
 		pgDatabase,
 		pgHost,
 	}
-	db := postgres.Run(dbConfig)
+	db = postgres.Run(dbConfig)
 	defer db.Close()
+
 	testUserRepository = NewPostgreUserRepository(db)
+	testMessageRepository = NewPostgreMessageRepository(db)
 
 	os.Exit(m.Run())
+}
+
+func NewMock() (*sql.DB, sqlmock.Sqlmock) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	return db, mock
+}
+
+func truncateUsers() error {
+	_, err := db.Query("TRUNCATE users CASCADE")
+	return err
 }

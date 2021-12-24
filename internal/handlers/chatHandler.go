@@ -10,9 +10,9 @@ import (
 )
 
 type chatService interface {
-	Reader(conn *websocket.Conn, id models.UserId) error
-	UsersInChat() map[models.UserId]models.User
-	SetUser(models.User)
+	GetUserById(id models.UserId) (models.User, error)
+	AddUserToChat(user models.User, connect *websocket.Conn) error
+	UsersInChat() []models.User
 	Upgrader() websocket.Upgrader
 }
 
@@ -33,16 +33,21 @@ func (h *chatHTTP) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := h.chatService.GetUserById(models.UserId(useId))
+	if err != nil {
+		response.WriteERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
 	upgrader := h.chatService.Upgrader()
-	ws, err := upgrader.Upgrade(w, r, nil)
+	connect, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	err = h.chatService.Reader(ws, models.UserId(useId))
-
+	err = h.chatService.AddUserToChat(user, connect)
 	if err != nil {
 		response.WriteERROR(w, http.StatusBadRequest, err)
 		return
@@ -55,15 +60,9 @@ func (h *chatHTTP) UsersInChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type CreateUserResponse struct {
-		Id       uint64 `json:"id"`
-		UserName string `json:"userName"`
-	}
+	var users []CreateUserResponse
 
-	activeUsers := h.chatService.UsersInChat()
-	users := make([]CreateUserResponse, len(activeUsers))
-
-	for _, user := range activeUsers {
+	for _, user := range h.chatService.UsersInChat() {
 		users = append(users, CreateUserResponse{
 			uint64(user.Id),
 			user.Name,

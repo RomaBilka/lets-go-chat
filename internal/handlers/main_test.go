@@ -19,7 +19,6 @@ import (
 var testUserRepository *repositories.UserRepository
 var uHttp *userHTTP
 var aHttp *authHTTP
-var cHttp *chatHTTP
 
 type errorResponse struct {
 	Error string `json:"error"`
@@ -86,14 +85,11 @@ func TestMain(m *testing.M) {
 	authService := services.NewAuthService(testUserRepository)
 	aHttp = NewAuthHttp(authService)
 
-	cService := services.NewChatService(testUserRepository)
-	cHttp = NewChatHttp(cService)
-
 	os.Exit(m.Run())
 }
 
 func truncateUsers() error {
-	_, err := db.Query("TRUNCATE users")
+	_, err := db.Query("TRUNCATE users CASCADE")
 	return err
 }
 
