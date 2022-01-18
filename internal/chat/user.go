@@ -8,17 +8,17 @@ import (
 type userInChat struct {
 	user models.User
 	conn *websocket.Conn
-	chat *Chat
+	hub  *Hub
 	send chan []byte
 }
 
-func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
-	u := &userInChat{user, connect, c, make(chan []byte)}
-	if activeUser, ok := c.users[user.Id]; ok {
+func (h *Hub) AddUserToChat(user models.User, connect *websocket.Conn) error {
+	u := &userInChat{user, connect, h, make(chan []byte)}
+	if activeUser, ok := h.users[user.Id]; ok {
 		activeUser.conn.Close()
 	}
-	c.users[user.Id] = u
-	messages, err := u.chat.messageRepository.GetMessages()
+	h.users[user.Id] = u
+	messages, err := u.hub.messageRepository.GetMessages()
 	if err != nil {
 		return err
 	}
@@ -37,19 +37,21 @@ func (c *Chat) AddUserToChat(user models.User, connect *websocket.Conn) error {
 
 func (user userInChat) Read() {
 	defer func() {
+		user.hub.unregister <- user
 		user.conn.Close()
-		delete(user.chat.users, user.user.Id)
 	}()
+
 	for {
 		_, p, err := user.conn.ReadMessage()
 		if err != nil {
 			break
 		}
-		_, err = user.chat.messageRepository.CreateMessage(models.Message{UserId: user.user.Id, Message: string(p)})
+		_, err = user.hub.messageRepository.CreateMessage(models.Message{UserId: user.user.Id, Message: string(p)})
 		if err != nil {
 			break
 		}
-		user.chat.broadcast <- p
+
+		user.hub.broadcast <- p
 	}
 }
 func (user userInChat) Write() {

@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/RomaBiliak/lets-go-chat/internal/chat"
 	"github.com/RomaBiliak/lets-go-chat/internal/models"
 	"github.com/RomaBiliak/lets-go-chat/internal/repositories"
 	"github.com/RomaBiliak/lets-go-chat/internal/services"
@@ -17,8 +18,10 @@ import (
 )
 
 var testUserRepository *repositories.UserRepository
+var messageRepository *repositories.MessageRepository
 var uHttp *userHTTP
 var aHttp *authHTTP
+var cHttp *chatHTTP
 
 type errorResponse struct {
 	Error string `json:"error"`
@@ -85,6 +88,12 @@ func TestMain(m *testing.M) {
 	authService := services.NewAuthService(testUserRepository)
 	aHttp = NewAuthHttp(authService)
 
+	messageRepository = repositories.NewPostgreMessageRepository(db)
+	newChat := chat.NewChat(messageRepository)
+	go newChat.Run()
+	chatService := services.NewChatService(testUserRepository, newChat)
+	cHttp = NewChatHttp(chatService)
+
 	os.Exit(m.Run())
 }
 
@@ -93,11 +102,16 @@ func truncateUsers() error {
 	return err
 }
 
+func truncateMessages() error {
+	_, err := db.Query("TRUNCATE messages CASCADE")
+	return err
+}
+
 func createTestUser(t *testing.T) models.UserId {
-	hashPassword, err := hasher.HashPassword(login.Password)
+	hashPassword, err := hasher.HashPassword(test.Password)
 	assert.NoError(t, err)
 
-	userId, err := testUserRepository.CreateUser(models.User{Name: login.UserName, Password: hashPassword})
+	userId, err := testUserRepository.CreateUser(models.User{Name: test.UserName, Password: hashPassword})
 	assert.NoError(t, err)
 	return userId
 }
