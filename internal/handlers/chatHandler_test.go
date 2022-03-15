@@ -46,7 +46,6 @@ func TestChat(t *testing.T) {
 	defer ws.Close()
 
 	message := "test message"
-	assert.NoError(t, err)
 
 	err = ws.WriteMessage(websocket.BinaryMessage, []byte(message))
 	assert.NoError(t, err)
